@@ -325,6 +325,53 @@ HERE's the part that didn't get pushed.
 It shows jagged arrays in terms of counts, offsets, starts/stops, and parents.
 \end{frame}
 
+\begin{frame}{Properties of this representation}
+\Large
+\vspace{0.5 cm}
+\begin{itemize}\setlength{\itemsep}{0.5 cm}
+\item Data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
+\item Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the content.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: generate muon pairs}
+\vspace{0.2 cm}
+
+\begin{columns}
+\column{1.1\linewidth}
+
+{\large\bf muons:}
+
+\vspace{0.2 cm}
+\begin{tabular}{r l}
+%% \textcolor{red}{counts}  & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\
+\textcolor{red}{offsets} & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\
+%% \textcolor{red}{starts}  & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
+%% \textcolor{red}{stops}   & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+\mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+phi &  \textcolor{darkorange}{\tt -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+eta &        \textcolor{blue}{\tt \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}
+
+\vspace{0.75 cm}
+{\large\bf muons.choose(2):}
+
+\vspace{0.2 cm}
+\begin{tabular}{r l}
+%% \textcolor{red}{counts}  &   \textcolor{red}{\tt 3,\ \ \ \ \ \ \ 0,\ 0,\ 1} \\
+\textcolor{red}{offsets} &   \textcolor{red}{\tt 0,\ \ \ \ \ \ \ 2,\ 2,\ 2,\ 3} \\
+\textcolor{black}{left}  & \textcolor{black}{\tt 0,\ 0,\ 1,\ \ \ \ \ \ \ 5} \\
+\textcolor{black}{right} & \textcolor{black}{\tt 1,\ 2,\ 2,\ \ \ \ \ \ \ 6} \\
+\textcolor{black}{left.content}  & \textcolor{black}{muons} \\
+\textcolor{black}{right.content} & \textcolor{black}{muons} \\
+\end{tabular}
+
+\vspace{-3.2 cm}
+\hfill\includegraphics[height=3.5 cm]{muons-choose-2.pdf}
+
+\end{columns}
+\end{frame}
+
 
 \begin{frame}{}
 \end{frame}
