@@ -372,6 +372,34 @@ eta &        \textcolor{blue}{\tt \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953
 \end{columns}
 \end{frame}
 
+\begin{frame}[fragile]{As a data structure}
+\vspace{0.25 cm}
+\begin{columns}
+\column{1.08\linewidth}
+\scriptsize
+\begin{verbatim}
+muons =
+    ListArray(
+        offsets = [0, 3, 4, 5, 7],
+        content =
+            RecordArray(
+                 pT = numpy.array([  31.1,   9.76,   8.18,   5.27,   4.72,   8.59, 8.714]),
+                eta = numpy.array([-0.481, -0.123, -0.119,  1.246, -0.207, -1.754, 0.185]),
+                phi = numpy.array([ 0.882,  0.924,  0.923, -0.991,  0.953, -0.264, 0.629])))
+
+
+
+muons.choose(2) =
+    ListArray(
+        offsets = [0, 2, 2, 2, 3],
+        content =
+            RecordArray(
+                 left = IndirectArray(index = [0, 0, 1, 5], content = muons)
+                right = IndirectArray(index = [1, 2, 2, 6], content = muons)))
+\end{verbatim}
+\end{columns}
+\end{frame}
+
 
 \begin{frame}{}
 \end{frame}
