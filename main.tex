@@ -56,172 +56,172 @@
 
 % START START START START START START START START START START START START START
 
-% \begin{frame}{Motivation: particle physics analysis}
-% \Large
-% \vspace{0.23 cm}
-% \begin{columns}
-% \column{0.5\linewidth}
-% \only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2->{\includegraphics[width=\linewidth]{omega-minus-2.png}}
-% \column{0.5\linewidth}
-%
-% \begin{center}
-% \begin{onlyenv}<1>
-% This is a famous photo: the 1964 discovery of the $\Omega$ baryon.
-%
-% \vspace{1 cm}
-% Do you see it?
-%
-% \vspace{1 cm}
-% \end{onlyenv}\begin{onlyenv}<2>
-% How about now?
-%
-% \begin{align*}
-% K^- + p & \to \Omega^- + K^+ + K^0 \\
-% \Omega^- & \to \Xi^0 + \pi^- \\
-% \Xi^0 & \to \Lambda^0 + \pi^0 \\
-% \Lambda^0 & \to p + \pi^- \\
-% \pi^0 & \to \gamma + \gamma
-% \end{align*}
-%
-% \vspace{1 cm}
-% \end{onlyenv}\begin{onlyenv}<3>
-% This is what particle physicists do: we collide particles, produce new ones and take pictures of their decay chains.
-%
-% \vspace{1 cm}
-% However, these pictures come to us unlabeled: lots of interactions overlap the ``interesting'' ones.
-%
-% \vspace{1 cm}
-% \end{onlyenv}
-% \end{center}
-%
-% \end{columns}
-% \end{frame}
-%
-% \begin{frame}{}
-% \begin{columns}
-% \column{1.15\linewidth}
-% \includegraphics[width=\linewidth]{090324_ALICE-hirez.jpg}
-% \end{columns}
-% \end{frame}
-%
-% \begin{frame}{Then and now}
-% \vspace{0.15 cm}
-% \begin{columns}
-% \column{0.32\linewidth}
-% \includegraphics[width=\linewidth]{H4000010-Team_that_discovered_Omega_minus_particle.jpg}
-%
-% \column{0.5\linewidth}
-% \begin{center}
-% \begin{columns}
-% \column{0.35\linewidth}
-% \centering
-% photographs
-%
-% \vspace{0.5 cm}
-% 100,000 events
-%
-% \vspace{0.5 cm}
-% manual/semi-automated scans
-%
-% \column{0.35\linewidth}
-% \centering
-% digitized signals \\
-%
-% \vspace{0.5 cm}
-% $\sim$trillion events \\
-%
-% \vspace{0.5 cm}
-% algorithmic searches and machine learning
-% \end{columns}
-% \end{center}
-%
-% \column{0.32\linewidth}
-% \includegraphics[width=\linewidth]{cms25_2.jpg}
-% \end{columns}
-% \end{frame}
-%
-% \begin{frame}{Algorithm to identify a particle decay}
-% \large
-% \vspace{0.15 cm}
-% \begin{center}
-% \includegraphics[height=4.2 cm]{kshort-1.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-2.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-3.png}
-% \end{center}
-%
-% \vspace{0.15 cm}
-% \begin{enumerate}
-% \item Loop over all pairs of particle tracks, tentatively labeling them $\pi^+$ and $\pi^-$.
-% \item Calculate m = $\sqrt{(E_{\pi^+} + E_{\pi^-})^2 - \left|\vec{p}_{\pi^+} + \vec{p}_{\pi^-}\right|^2}$.
-% \item The ones with $m \sim \mbox{mass}({K_s^0}) = 0.5\mbox{ GeV}/c^2$ are good candidates.
-% \end{enumerate}
-% \end{frame}
-%
-% \begin{frame}{Apply successively down the decay chain}
-% \Large
-% \begin{center}
-% $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
-% \end{center}
-%
-% \includegraphics[height=6 cm]{higgs-to-four-leptons.png}\hfill\includegraphics[height=6 cm]{higgs-to-four-leptons-2.png}
-% \end{frame}
-%
-% \begin{frame}{Key parts of the calculation}
-% \Large
-% \vspace{0.15 cm}
-% \begin{itemize}\setlength{\itemsep}{0.25 cm}
-% \item All events are independent; no particles or decays cross from one event to the next.
-% \item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
-% \item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
-% \item Good candidates are identified by {\it filtering} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
-% \end{itemize}
-% \end{frame}
-%
-% \begin{frame}{Key parts of the calculation}
-% \Large
-% \vspace{0.5 cm}
-% \includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
-%
-% \hfill \ldots independently for each event.
-% \end{frame}
-%
-% \begin{frame}{Key part of the data structure}
-% \Large
-% \vspace{0.25 cm}
-% \begin{itemize}
-% \item Large number of events, processed in parallel.
-% \item Each event has an {\it arbitrary number} of record structures.
-% \item Not reducible to a flat table without padding and/or loss.
-% \end{itemize}
-%
-% \vspace{0.25 cm}
-% \begin{columns}
-% \column{0.5\linewidth}
-% \includegraphics[width=\linewidth]{muons-as-objects.png}
-%
-% \column{0.5\linewidth}
-% \includegraphics[width=\linewidth]{muons-as-a-table.png}
-% \end{columns}
-% \end{frame}
-%
-% \begin{frame}{Programming languages used in particle physics}
-% \large
-% \vspace{0.5 cm}
-% \includegraphics[width=\linewidth]{programming-languages.pdf}
-%
-% \vspace{0.25 cm}
-% \begin{itemize}
-% \item First programmable computers were used for particle physics simulations.
-% \item Fortran was used to analyze events soon after the language was invented.
-% \item Major transition from Fortran to C++ in the late 1990's/early 2000's.
-% \item Very recent adoption of Python (alongside C++).
-% \end{itemize}
-% \end{frame}
-%
-% \begin{frame}{The Python transition}
-% \vspace{0.2 cm}
-% \includegraphics[width=\linewidth]{github-cmssw-lin.pdf}
-%
-% \includegraphics[width=\linewidth]{github-cmssw-frac.pdf}
-% \end{frame}
+\begin{frame}{Motivation: particle physics analysis}
+\Large
+\vspace{0.23 cm}
+\begin{columns}
+\column{0.5\linewidth}
+\only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2->{\includegraphics[width=\linewidth]{omega-minus-2.png}}
+\column{0.5\linewidth}
+
+\begin{center}
+\begin{onlyenv}<1>
+This is a famous photo: the 1964 discovery of the $\Omega$ baryon.
+
+\vspace{1 cm}
+Do you see it?
+
+\vspace{1 cm}
+\end{onlyenv}\begin{onlyenv}<2>
+How about now?
+
+\begin{align*}
+K^- + p & \to \Omega^- + K^+ + K^0 \\
+\Omega^- & \to \Xi^0 + \pi^- \\
+\Xi^0 & \to \Lambda^0 + \pi^0 \\
+\Lambda^0 & \to p + \pi^- \\
+\pi^0 & \to \gamma + \gamma
+\end{align*}
+
+\vspace{1 cm}
+\end{onlyenv}\begin{onlyenv}<3>
+This is what particle physicists do: we collide particles, produce new ones and take pictures of their decay chains.
+
+\vspace{1 cm}
+However, these pictures come to us unlabeled: lots of interactions overlap the ``interesting'' ones.
+
+\vspace{1 cm}
+\end{onlyenv}
+\end{center}
+
+\end{columns}
+\end{frame}
+
+\begin{frame}{}
+\begin{columns}
+\column{1.15\linewidth}
+\includegraphics[width=\linewidth]{090324_ALICE-hirez.jpg}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Then and now}
+\vspace{0.15 cm}
+\begin{columns}
+\column{0.32\linewidth}
+\includegraphics[width=\linewidth]{H4000010-Team_that_discovered_Omega_minus_particle.jpg}
+
+\column{0.5\linewidth}
+\begin{center}
+\begin{columns}
+\column{0.35\linewidth}
+\centering
+photographs
+
+\vspace{0.5 cm}
+100,000 events
+
+\vspace{0.5 cm}
+manual/semi-automated scans
+
+\column{0.35\linewidth}
+\centering
+digitized signals \\
+
+\vspace{0.5 cm}
+$\sim$trillion events \\
+
+\vspace{0.5 cm}
+algorithmic searches and machine learning
+\end{columns}
+\end{center}
+
+\column{0.32\linewidth}
+\includegraphics[width=\linewidth]{cms25_2.jpg}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Algorithm to identify a particle decay}
+\large
+\vspace{0.15 cm}
+\begin{center}
+\includegraphics[height=4.2 cm]{kshort-1.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-2.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-3.png}
+\end{center}
+
+\vspace{0.15 cm}
+\begin{enumerate}
+\item Loop over all pairs of particle tracks, tentatively labeling them $\pi^+$ and $\pi^-$.
+\item Calculate m = $\sqrt{(E_{\pi^+} + E_{\pi^-})^2 - \left|\vec{p}_{\pi^+} + \vec{p}_{\pi^-}\right|^2}$.
+\item The ones with $m \sim \mbox{mass}({K_s^0}) = 0.5\mbox{ GeV}/c^2$ are good candidates.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Apply successively down the decay chain}
+\Large
+\begin{center}
+$H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
+\end{center}
+
+\includegraphics[height=6 cm]{higgs-to-four-leptons.png}\hfill\includegraphics[height=6 cm]{higgs-to-four-leptons-2.png}
+\end{frame}
+
+\begin{frame}{Key parts of the calculation}
+\Large
+\vspace{0.15 cm}
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item All events are independent; no particles or decays cross from one event to the next.
+\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
+\item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+\item Good candidates are identified by {\it filtering} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Key parts of the calculation}
+\Large
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
+
+\hfill \ldots independently for each event.
+\end{frame}
+
+\begin{frame}{Key part of the data structure}
+\Large
+\vspace{0.25 cm}
+\begin{itemize}
+\item Large number of events, processed in parallel.
+\item Each event has an {\it arbitrary number} of record structures.
+\item Not reducible to a flat table without padding and/or loss.
+\end{itemize}
+
+\vspace{0.25 cm}
+\begin{columns}
+\column{0.5\linewidth}
+\includegraphics[width=\linewidth]{muons-as-objects.png}
+
+\column{0.5\linewidth}
+\includegraphics[width=\linewidth]{muons-as-a-table.png}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Programming languages used in particle physics}
+\large
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{programming-languages.pdf}
+
+\vspace{0.25 cm}
+\begin{itemize}
+\item First programmable computers were used for particle physics simulations.
+\item Fortran was used to analyze events soon after the language was invented.
+\item Major transition from Fortran to C++ in the late 1990's/early 2000's.
+\item Very recent adoption of Python (alongside C++).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Python transition}
+\vspace{0.2 cm}
+\includegraphics[width=\linewidth]{github-cmssw-lin.pdf}
+
+\includegraphics[width=\linewidth]{github-cmssw-frac.pdf}
+\end{frame}
 
 \begin{frame}[fragile]{In our field, ``conventional'' analysis means C++}
 \vspace{0.25 cm}
@@ -315,6 +315,95 @@ By manipulating the {\tt shape} and {\tt strides}, slices are $\mathcal{O}(1)$ a
 \vspace{0.5 cm}
 \uncover<2->{Arrays of variable-length subarrays are sometimes called ``ragged`` or ``jagged`` arrays.}
 \end{frame}
+
+\begin{frame}[fragile]{Jagged/nested data can still be ``columnar''}
+\vspace{0.5 cm}
+
+\begin{columns}
+\column{0.5\linewidth}
+\small
+\begin{Verbatim}[commandchars=\\\{\}]
+[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}),
+      Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}),
+      Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
+ [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
+ [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}),
+      Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})]
+]
+\end{Verbatim}
+\column{0.35\linewidth}
+\includegraphics[width=\linewidth]{muons-as-objects.png}
+\end{columns}
+
+\vspace{0.5 cm}
+They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,4>{counts} or \only<2>{\textcolor{red}{offsets}}\only<1,3,4>{offsets} or \only<3>{\textcolor{red}{starts/stops}}\only<1,2,4>{starts/stops} or \only<4>{\textcolor{red}{parents}}\only<1,2,3>{parents} arrays.
+
+\vspace{0.25 cm}
+\begin{tabular}{r l}
+\only<1>{\small \textcolor{red}{counts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\}
+\only<2>{\small \textcolor{red}{offsets} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\}
+\only<4>{\small \textcolor{red}{parents} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2,\ \ \ \ \ \ 3,\ \ \ \ \ 3} \\}
+\only<3>{\small \textcolor{red}{starts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\}
+\uncover<3>{\small \textcolor{red}{stops}   & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\}
+\small \mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile]{This allows for efficient ways of {\it manipulating} data}
+\vspace{0.25 cm}
+
+``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ rewrite all inner lists.}}
+
+\scriptsize
+\begin{onlyenv}<1>
+\begin{Verbatim}[commandchars=\\\{\}]
+[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}), Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
+ [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
+ [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}), Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
+ ...
+\end{Verbatim}
+\end{onlyenv}\begin{onlyenv}<2->
+\begin{Verbatim}[commandchars=\\\{\}]
+[[     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     }   Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{     }  \textcolor{blue}{      } ],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     } ],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{      }   Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
+ ...
+\end{Verbatim}
+\end{onlyenv}
+\normalsize
+
+\vspace{0.5 cm}
+``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ increase all starts by 1.}}
+
+\vspace{0.25 cm}
+\begin{onlyenv}<1>
+\begin{tabular}{r l}
+\small starts  &                    {\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
+\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}
+\end{onlyenv}\begin{onlyenv}<2->
+\begin{tabular}{r l}
+\small starts  &     \textcolor{red}{\tt\scriptsize \ \ \ \ \ 1,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 6\ \ \ \ \ \ \ \ \ } \\
+\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}\end{onlyenv}
+
+\vspace{0.5 cm}
+\uncover<3>{We didn't need to touch any contents (i.e.\ read them from disk, decompress them\ldots).}
+\end{frame}
+
+
+
 
 
 \begin{frame}{}
