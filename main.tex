@@ -163,64 +163,157 @@
 %
 % \includegraphics[height=6 cm]{higgs-to-four-leptons.png}\hfill\includegraphics[height=6 cm]{higgs-to-four-leptons-2.png}
 % \end{frame}
+%
+% \begin{frame}{Key parts of the calculation}
+% \Large
+% \vspace{0.15 cm}
+% \begin{itemize}\setlength{\itemsep}{0.25 cm}
+% \item All events are independent; no particles or decays cross from one event to the next.
+% \item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
+% \item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+% \item Good candidates are identified by {\it filtering} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
+% \end{itemize}
+% \end{frame}
+%
+% \begin{frame}{Key parts of the calculation}
+% \Large
+% \vspace{0.5 cm}
+% \includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
+%
+% \hfill \ldots independently for each event.
+% \end{frame}
+%
+% \begin{frame}{Key part of the data structure}
+% \Large
+% \vspace{0.25 cm}
+% \begin{itemize}
+% \item Large number of events, processed in parallel.
+% \item Each event has an {\it arbitrary number} of record structures.
+% \item Not reducible to a flat table without padding and/or loss.
+% \end{itemize}
+%
+% \vspace{0.25 cm}
+% \begin{columns}
+% \column{0.5\linewidth}
+% \includegraphics[width=\linewidth]{muons-as-objects.png}
+%
+% \column{0.5\linewidth}
+% \includegraphics[width=\linewidth]{muons-as-a-table.png}
+% \end{columns}
+% \end{frame}
+%
+% \begin{frame}{Programming languages used in particle physics}
+% \large
+% \vspace{0.5 cm}
+% \includegraphics[width=\linewidth]{programming-languages.pdf}
+%
+% \vspace{0.25 cm}
+% \begin{itemize}
+% \item First programmable computers were used for particle physics simulations.
+% \item Fortran was used to analyze events soon after the language was invented.
+% \item Major transition from Fortran to C++ in the late 1990's/early 2000's.
+% \item Very recent adoption of Python (alongside C++).
+% \end{itemize}
+% \end{frame}
+%
+% \begin{frame}{The Python transition}
+% \vspace{0.2 cm}
+% \includegraphics[width=\linewidth]{github-cmssw-lin.pdf}
+%
+% \includegraphics[width=\linewidth]{github-cmssw-frac.pdf}
+% \end{frame}
 
-\begin{frame}{Key parts of the calculation}
-\Large
-\vspace{0.15 cm}
-\begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no particles or decays cross from one event to the next.
-\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
-\item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
-\item Good candidates are identified by {\it filtering} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Key parts of the calculation}
-\Large
-\vspace{0.5 cm}
-\includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
-
-\hfill \ldots independently for each event.
-\end{frame}
-
-\begin{frame}{Key part of the data structure}
-\Large
+\begin{frame}[fragile]{In our field, ``conventional'' analysis means C++}
 \vspace{0.25 cm}
-\begin{itemize}
-\item Large number of events, processed in parallel.
-\item Each event has an {\it arbitrary number} of record structures.
-\item Not reducible to a flat table without padding and/or loss.
-\end{itemize}
+\begin{columns}[b]
+\column{0.7\linewidth}
+\begin{minted}{c++}
+std::vector<Kaon*> getKaons(Event event) {
+  std::vector<Track*> tracks = event.getTracks();
+  std::vector<Kaon*> kaons;
+  for (auto t1 = tracks.begin(); t1 != tracks.end(); ++t1) {
+    for (auto t2 = t1 + 1; t2 != tracks.end(); ++t2) {
+      if (t1->charge != t2->charge) {
+        double m = mass(t1, t2);
+        if (fabs(m - 0.5) < 0.01) {
+          kaons.push_back(new Kaon(t1, t2));
+        }
+      }
+    }
+  }
+  return kaons;
+}
+\end{minted}
 
-\vspace{0.25 cm}
-\begin{columns}
-\column{0.5\linewidth}
-\includegraphics[width=\linewidth]{muons-as-objects.png}
+\vspace{0.1 cm}
 
-\column{0.5\linewidth}
-\includegraphics[width=\linewidth]{muons-as-a-table.png}
+\column{0.25\linewidth}
+\includegraphics[width=\linewidth]{kshort-1.png}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Programming languages used in particle physics}
-\large
-\vspace{0.5 cm}
-\includegraphics[width=\linewidth]{programming-languages.pdf}
-
+\begin{frame}[fragile]{Direct translation to Python would be a performance disaster}
 \vspace{0.25 cm}
-\begin{itemize}
-\item First programmable computers were used for particle physics simulations.
-\item Fortran was used to analyze events soon after the language was invented.
-\item Major transition from Fortran to C++ in the late 1990's/early 2000's.
-\item Very recent adoption of Python (alongside C++).
-\end{itemize}
+\begin{columns}[b]
+\column{0.7\linewidth}
+\begin{minted}[stripnl=false]{python}
+def getKaons(event):
+  tracks = event.getTracks()
+  kaons = []
+  for i, t1 in enumerate(tracks):
+    for t2 in tracks[i + 1:]:
+      if t1.charge != t2.charge:
+        m = mass(t1, t2)
+        if abs(m - 0.5) < 0.01:
+          kaons.append(Kaon(t1, t2))
+
+
+
+
+  return kaons
+
+\end{minted}
+
+\vspace{0.1 cm}
+
+\column{0.25\linewidth}
+\includegraphics[width=\linewidth]{kshort-1.png}
+\end{columns}
 \end{frame}
 
-\begin{frame}{The Python transition}
-\vspace{0.2 cm}
-\includegraphics[width=\linewidth]{github-cmssw-lin.pdf}
+\begin{frame}{High-throughput data analysis is based on Numpy}
+\vspace{0.5 cm}
+\begin{center}
+\includegraphics[width=0.35\linewidth]{numpy-logo.png}
 
-\includegraphics[width=\linewidth]{github-cmssw-frac.pdf}
+\vspace{1 cm}
+\includegraphics[width=0.75\linewidth]{numpy-memory-layout.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{High-throughput data analysis is based on Numpy}
+\Large
+\vspace{0.5 cm}
+\begin{columns}
+\column{0.4\linewidth}
+\includegraphics[width=\linewidth]{numpy-slicing.png}
+
+\column{0.52\linewidth}
+Numpy has a suite of operations that each apply to whole arrays (compiled, maybe vectorized loop).
+
+\vspace{1 cm}
+
+By manipulating the {\tt shape} and {\tt strides}, slices are $\mathcal{O}(1)$ and zero-copy.
+\end{columns}
+\end{frame}
+
+\begin{frame}{But Numpy doesn't have a construct for variable-length lists}
+\Large
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{two-collections.pdf}
+
+\vspace{0.5 cm}
+\uncover<2->{Arrays of variable-length subarrays are sometimes called ``ragged`` or ``jagged`` arrays.}
 \end{frame}
 
 
