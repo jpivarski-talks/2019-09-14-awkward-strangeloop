@@ -155,8 +155,14 @@
 % \end{enumerate}
 % \end{frame}
 
-
-\begin{frame}{}
+\begin{frame}{Key parts of the calculation}
+\Large
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item All events are independent; no interaction crosses from one event to the next.
+\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
+\item Generating candidates an \mintinline{sql}{INNER JOIN} ($n$ items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+\item Good candidates are identified by {\it selection} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
+\end{itemize}
 \end{frame}
 
 \end{document}
