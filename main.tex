@@ -151,18 +151,64 @@
 % \begin{enumerate}
 % \item Loop over all pairs of particle tracks, tentatively labeling them $\pi^+$ and $\pi^-$.
 % \item Calculate m = $\sqrt{(E_{\pi^+} + E_{\pi^-})^2 - \left|\vec{p}_{\pi^+} + \vec{p}_{\pi^-}\right|^2}$.
-% \item The ones with $m \sim m_{K_s} = 0.5\mbox{ GeV}/c^2$ are good candidates.
+% \item The ones with $m \sim \mbox{mass}({K_s^0}) = 0.5\mbox{ GeV}/c^2$ are good candidates.
 % \end{enumerate}
+% \end{frame}
+%
+% \begin{frame}{Apply successively down the decay chain}
+% \Large
+% \begin{center}
+% $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
+% \end{center}
+%
+% \includegraphics[height=6 cm]{higgs-to-four-leptons.png}\hfill\includegraphics[height=6 cm]{higgs-to-four-leptons-2.png}
 % \end{frame}
 
 \begin{frame}{Key parts of the calculation}
 \Large
+\vspace{0.15 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no interaction crosses from one event to the next.
+\item All events are independent; no particles or decays cross from one event to the next.
 \item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
-\item Generating candidates an \mintinline{sql}{INNER JOIN} ($n$ items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
-\item Good candidates are identified by {\it selection} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
+\item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+\item Good candidates are identified by {\it filtering} (throw away bad ones) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Key parts of the calculation}
+\Large
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
+
+\hfill \ldots independently for each event.
+\end{frame}
+
+\begin{frame}{Key part of the data structure}
+\Large
+\vspace{0.25 cm}
+\begin{itemize}
+\item Large number of events, processed in parallel.
+\item Each event has an {\it arbitrary number} of record structures.
+\item Not reducible to a flat table without padding and/or loss.
+\end{itemize}
+
+\vspace{0.25 cm}
+\begin{columns}
+\column{0.5\linewidth}
+\includegraphics[width=\linewidth]{muons-as-objects.png}
+
+\column{0.5\linewidth}
+\includegraphics[width=\linewidth]{muons-as-a-table.png}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Programming languages used in particle physics}
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{programming-languages.pdf}
+\end{frame}
+
+
+\begin{frame}{}
 \end{frame}
 
 \end{document}
