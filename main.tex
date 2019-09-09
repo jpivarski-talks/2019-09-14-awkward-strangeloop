@@ -11,7 +11,7 @@
   \setbeamertemplate{footline}[frame number]  % or "page number"
   \setbeamercolor{frametitle}{fg=white}
   \setbeamercolor{footline}{fg=black}
-} 
+}
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -57,8 +57,13 @@
 % START START START START START START START START START START START START START
 
 \begin{frame}{First slide}
-\vspace{0.5 cm}
+\vspace{0.23 cm}
+\begin{columns}
+\column{0.5\linewidth}
+\only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2>{\includegraphics[width=\linewidth]{omega-minus-2.png}}
+\column{0.5\linewidth}
 HERE
+\end{columns}
 \end{frame}
 
 \end{document}
