@@ -1080,10 +1080,25 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 \end{columns}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{Next steps}
 \large
+\begin{columns}
+\column{0.5\linewidth}
+\begin{itemize}
+\item At this point, we see some flaws:
+\begin{itemize}
+\item \mintinline{python}{A.cross(B)} versus \mintinline{python}{awkward.cross(A, B)};
+\item should hide \mintinline{python}{JaggedArray}/\mintinline{python}{MaskedArray}/etc.\ structure in a single \mintinline{python}{Array}
+\end{itemize}
 
+\item For a long time, we've wanted a versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
 
+\item So we're rewriting it in four layers (see right).
+\end{itemize}
+
+\column{0.5\linewidth}
+\includegraphics[width=\linewidth]{awkward-1-0-layers.pdf}
+\end{columns}
 \end{frame}
 
 
