@@ -508,18 +508,47 @@ eta &        \textcolor{blue}{\tt \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953
 <Table [<Row 0> <Row 1> <Row 2> ... <Row 2933> <Row 2934>]>
 \end{minted}
 
+\begin{onlyenv}<1>
+\vspace{10 cm}
+\end{onlyenv}
+\begin{onlyenv}<2>
 \begin{minted}{python}
->>> stars[0].tolist()
-{'name': '11 Com', 'ra': 185.179276, 'dec': 17.792868, 'dist': 93.37, 'mass': 2.7, 'radius': 19.0
-
-
-{'planets': [{'eccen': 0.231, 'mass': 19.4, 'name': 'b', 'orbit': 1.29, 'period': 326.03, 'radius': None}], }
+>>> fixit(stars[8])
+{'name': '24 Sex', 'ra': 155.86821, 'dec': -0.902244, 'dist': 72.21,
+ 'mass': 1.54, 'radius': 4.9, 'planets': [
+     {'name': 'b', 'orbit': 1.333, 'eccen': 0.09, 'period': 452.8,
+      'mass': 1.99, 'radius': None},
+     {'name': 'c', 'orbit': 2.08, 'eccen': 0.29, 'period': 883.0,
+      'mass': 0.86, 'radius': None}]}
 \end{minted}
 
-
-
+\vspace{10 cm}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\scriptsize
+\vspace{-0.35 cm}
+\begin{verbatim}
+>>> print(stars.type)
+[0, 2935) -> 'name'    -> <class 'str'>
+             'ra'      -> float64
+             'dec'     -> float64
+             'dist'    -> ?(float64)
+             'mass'    -> ?(float64)
+             'radius'  -> ?(float64)
+             'planets' -> [0, inf) -> 'eccen'  -> ?(float64)
+                                      'mass'   -> ?(float64)
+                                      'name'   -> <class 'str'>
+                                      'orbit'  -> ?(float64)
+                                      'period' -> ?(float64)
+                                      'radius' -> ?(float64)
+\end{verbatim}
+\end{onlyenv}
 \end{columns}
 \end{frame}
+
+
+
+
 
 
 
