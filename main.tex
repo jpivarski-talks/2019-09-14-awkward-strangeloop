@@ -801,11 +801,39 @@ Let's look at a real dataset in detail
 \end{columns}
 \end{frame}
 
+\begin{frame}{}
 
+But Pandas can't do multiple jagged arrays in the same DataFrame.
 
+\end{frame}
 
+\begin{frame}{Relationship to other packages}
+\large
+\vspace{0.5 cm}
+\begin{columns}
+\column{1.05\linewidth}
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item \textcolor{darkblue}{Apache Arrow:} columnar representation of nested data, memory management, shared memory, streaming, and I/O.
 
+\item \textcolor{darkblue}{XND:} columnar representation of nested, cross-referenced data, generalizing Numpy ufuncs, math kernels, and GPUs.
 
+\item \textcolor{darkblue}{TensorFlow:} maching learning, but it includes a {\tt RaggedTensor} type.
+
+\item \textcolor{darkblue}{Zarr:} array I/O and delivery, including a {\tt VLenArray} (ragged array) because it's useful for genetics.
+
+\item \textcolor{darkblue}{ROOT:} particle physics data analysis; I/O is columnar for better compression, but in-memory data are C++ objects.
+\end{itemize}
+\end{columns}
+
+\vspace{0.5 cm}
+\uncover<2->{\textcolor{red}{Awkward Array's focus is {\it not} I/O or ``flat math,'' it's the structure manipulation that physicists regularly need to do to analyze particle decays.}}
+\end{frame}
+
+\begin{frame}{}
+
+Examples from ROOT Workshop
+
+\end{frame}
 
 
 
