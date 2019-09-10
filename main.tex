@@ -854,8 +854,191 @@ ValueError: this array has more than one jagged array structure
 \end{frame}
 
 \begin{frame}{}
+\LARGE
+\vspace{1 cm}
+\begin{center}
+Examples of Awkward Array's focus: \\ how it solves various physics problems
+\end{center}
+\end{frame}
 
-Examples from ROOT Workshop
+\begin{frame}[fragile]{Problem 1: mass of $A \to X + Y$ and $B \to X + X$ candidates}
+\vspace{0.5 cm}
+{\bf Traditional for loop:} 
+\small
+\begin{minted}{python}
+for event in dataset:
+    event.A = []
+    for x in event.X:
+        for y in event.Y:
+            event.A.append(mass(x, y))
+    event.B = []
+    for i in range(len(event.X)):
+        for j in range(i + 1, len(event.X)):
+            event.B.append(mass(event.X[i], event.X[j]))
+\end{minted}
+\normalsize
+
+\vspace{0.5 cm}
+{\bf Array programming:} 
+\small
+\begin{minted}{python}
+dataset["A"] = dataset["X"].cross(dataset["Y"])
+dataset["B"] = dataset["X"].choose(2)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{The {\tt cross} and {\tt choose} methods are implemented with Numpy}
+\begin{columns}
+\column{1.05\linewidth}
+\small
+\begin{minted}{python}
+def cross(self, other):
+    offsets = counts2offsets(self.counts * other.counts)
+    parents = offsets2parents(offsets)
+    indexes = numpy.arange(offsets[-1], dtype=int)
+
+    ocp = other.counts[parents]            # no for loops
+    iop = indexes - offsets[parents]       # fully vectorizable
+    iop_ocp = iop // ocp
+
+    left = self.content[self.starts[parents] + iop_ocp]
+    right = other.content[other.starts[parents] + iop - ocp * iop_ocp]
+
+    return JaggedArray.fromoffsets(offsets, Table(left, right))
+
+def choose(self, n):
+    # vectorized as well
+    # (in fact, it's limited to n <= 5 due to the Abel-Ruffini theorem!)
+    ...
+\end{minted}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Problem 2: filtering $A \to X + Y$ candidates}
+\vspace{0.4 cm}
+{\bf Traditional for loop:} 
+\small
+\begin{minted}{python}
+dataset.byevent = []
+for event in dataset:
+    event.bycandidate = []
+    for a in event.A:
+        if quality(a) > cut:
+            event.bycandidate.append(a)
+    biggest = None
+    for a in event.A:
+        if biggest is None or quality(a) > quality(biggest):
+            biggest = a
+    if biggest is not None and biggest > cut:
+        dataset.byevent.append(biggest)
+\end{minted}
+\normalsize
+
+\vspace{0.1 cm}
+{\bf Array programming:} 
+\small
+\begin{minted}{python}
+dataset["bycandidate"] = events["A"][events["A"] > cut]
+dataset["byevent"]     = events["A"][events["A"].max() > cut]
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Generalized masking (i.e.\ \mintinline{python}{numpy.compress})}
+\small
+\begin{columns}
+\column{1.1\linewidth}
+\begin{minted}{python}
+>>> x
+<JaggedArray [[ 1.1,   2.2,  3.3], [  4.4,   5.5], [ 6.6,  7.7,  8.8]]>
+
+>>> mask
+<JaggedArray [        True,             False,             True      ]>
+
+>>> jmask
+<JaggedArray [[True, False, True], [False, False], [True, True, True]]>
+\end{minted}
+
+\vspace{0.5 cm}
+\normalsize
+Flat array of booleans does what Numpy does; jagged booleans selects within each inner list.
+
+\small
+\begin{minted}{python}
+>>> x[mask]
+<JaggedArray [[1.1 2.2 3.3] [6.6 7.7 8.8]]>
+
+>>> x[jmask]
+<JaggedArray [[1.1 3.3] [] [6.6 7.7 8.8]]>
+\end{minted}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Problem 3: Select the best $A \to X + Y$ candidate}
+\vspace{0.5 cm}
+\begin{columns}
+\column{1.05\linewidth}
+{\bf Traditional for loop:} 
+\small
+\begin{minted}{python}
+for event in dataset:
+    event.best = []              # using an empty collection as None
+    for a in event.A:
+        if len(event.best) == 0 or quality(a) > quality(event.best[0]):
+            event.best = [a]
+\end{minted}
+\normalsize
+
+\vspace{0.5 cm}
+{\bf Array programming:} 
+\small
+\begin{minted}{python}
+argbest = quality(events["A"]).argmax()
+dataset["best"] = events["A"][argbest]
+\end{minted}
+
+\vspace{0.05 cm}
+\begin{uncoverenv}<2->
+\begin{minted}{python}
+# remove empty lists and concatenate singletons by dropping offsets
+only_the_best = dataset["best"].flatten()
+\end{minted}
+\end{uncoverenv}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Generalized indexing (i.e.\ \mintinline{python}{numpy.take})}
+\small
+\begin{columns}
+\column{1.1\linewidth}
+\begin{minted}{python}
+>>> x
+<JaggedArray [[ 1.1, 2.2, 3.3, 4.4], [5.5, 6.6], [7.7, 8.8, 9.9]]>
+
+>>> index
+<JaggedArray [-1, 0, 0]>
+
+>>> jindex
+<JaggedArray [[0, 0, -1], [0, 0, -1], [0, 0, -1]]>
+\end{minted}
+
+\vspace{0.5 cm}
+\normalsize
+Flat array of integers does what Numpy does; jagged indexes takes from each inner list.
+
+\small
+\begin{minted}{python}
+>>> x[index]
+<JaggedArray [[7.7 8.8 9.9] [1.1 2.2 3.3 4.4] [1.1 2.2 3.3 4.4]]>
+
+>>> x[jindex]
+<JaggedArray [[1.1 1.1 4.4] [5.5 5.5 6.6] [7.7 7.7 9.9]]>
+\end{minted}
+\end{columns}
+\end{frame}
+
+\begin{frame}{}
+
+
 
 \end{frame}
 
