@@ -58,11 +58,11 @@
 
 \begin{frame}{Motivation: particle physics analysis}
 \Large
-\vspace{0.23 cm}
+\vspace{0.35 cm}
 \begin{columns}
-\column{0.5\linewidth}
+\column{0.48\linewidth}
 \only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2->{\includegraphics[width=\linewidth]{omega-minus-2.png}}
-\column{0.5\linewidth}
+\column{0.52\linewidth}
 
 \begin{center}
 \begin{onlyenv}<1>
@@ -77,6 +77,8 @@ How about now?
 
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{decay-chain.png}
+
+\vspace{0.5 cm}
 %% \begin{align*}
 %% K^- + p & \to \Omega^- + K^+ + K^0 \\
 %% \Omega^- & \to \Xi^0 + \pi^- \\
@@ -85,9 +87,8 @@ How about now?
 %% \pi^0 & \to \gamma + \gamma
 %% \end{align*}
 
-\vspace{1 cm}
 \end{onlyenv}\begin{onlyenv}<3>
-This is what particle physicists do: we collide particles, produce new ones and take pictures of their decay chains.
+This is what particle physicists do: collide particles, produce new ones and take pictures of the decays.
 
 \vspace{1 cm}
 However, these pictures come to us unlabeled: lots of interactions overlap the ``interesting'' ones.
@@ -106,7 +107,7 @@ However, these pictures come to us unlabeled: lots of interactions overlap the `
 \end{columns}
 \end{frame}
 
-\begin{frame}{Then and now: mostly just scale-up}
+\begin{frame}{Modern particle physics scales this up}
 \vspace{0.15 cm}
 \begin{columns}
 \column{0.32\linewidth}
@@ -142,7 +143,7 @@ algorithmic searches and machine learning
 \end{columns}
 \end{frame}
 
-\begin{frame}{Algorithm to identify a particle decay}
+\begin{frame}{Automatically identifying a particle decay}
 \large
 \vspace{0.5 cm}
 \begin{enumerate}
@@ -156,7 +157,7 @@ algorithmic searches and machine learning
 \end{center}
 \end{frame}
 
-\begin{frame}{Apply successively down the decay chain}
+\begin{frame}{Apply this technique successively down the decay chain}
 \Large
 \begin{center}
 $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
@@ -165,18 +166,20 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \includegraphics[height=6 cm]{higgs-to-four-leptons.png}\hfill\includegraphics[height=6 cm]{higgs-to-four-leptons-2.png}
 \end{frame}
 
-\begin{frame}{Key parts of the calculation}
+\begin{frame}{From a computational point of view\ldots}
 \Large
 \vspace{0.15 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no particles or decays cross from one event to the next.
+\item All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(for most searches)}.
 \item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
-\item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+\item Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
+
+(single collection) or a \mintinline{sql}{CROSS JOIN} (different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
 \item Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Key parts of the calculation}
+\begin{frame}{From a computational point of view\ldots}
 \Large
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{explode-flat-reduce.pdf}
@@ -184,7 +187,7 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \hfill \ldots independently for each event.
 \end{frame}
 
-\begin{frame}{Key part of the data structure}
+\begin{frame}{From a computational point of view\ldots}
 \Large
 \vspace{0.25 cm}
 \begin{itemize}
@@ -320,16 +323,20 @@ calculate(pt_array,  eta_array)
 \end{columns}
 \end{frame}
 
-\begin{frame}{But Numpy doesn't have anything for variable-length lists}
+\begin{frame}{But Numpy doesn't have anything for unequal-length lists}
 \Large
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{two-collections.pdf}
 
 \vspace{0.5 cm}
-\uncover<2->{Arrays of variable-length subarrays are sometimes called ``jagged`` or ``ragged`` arrays.}
+\uncover<2->{Some libraries* can represent arrays of unequal-length arrays, known as ``jagged'' or ``ragged'' arrays.}
+
+\vspace{0.25 cm}
+\large
+\uncover<2->{\textcolor{gray}{*Apache Arrow, XND, Zarr, TensorFlow, and ROOT (particle physics)}}
 \end{frame}
 
-\begin{frame}[fragile]{Jagged/nested data can still be ``columnar''}
+\begin{frame}[fragile]{Jagged/nested data can be contiguous by field (``columnar'')}
 \vspace{0.5 cm}
 \begin{columns}
 \column{0.5\linewidth}
@@ -348,7 +355,7 @@ calculate(pt_array,  eta_array)
 \includegraphics[width=\linewidth]{muons-as-objects.png}
 \end{columns}
 \vspace{0.5 cm}
-They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,4>{counts} or \only<2>{\textcolor{red}{offsets}}\only<1,3,4>{offsets} or \only<3>{\textcolor{red}{starts/stops}}\only<1,2,4>{starts/stops} or \only<4>{\textcolor{red}{parents}}\only<1,2,3>{parents} arrays.
+\large The trick: represent structure with \only<1>{\textcolor{red}{counts}}\only<2,3,4>{counts} or \only<2>{\textcolor{red}{offsets}}\only<1,3,4>{offsets} or \only<3>{\textcolor{red}{starts/stops}}\only<1,2,4>{starts/stops} or \only<4>{\textcolor{red}{parents}}\only<1,2,3>{parents}.
 \vspace{0.25 cm}
 \begin{tabular}{r l}
 \only<1>{\small \textcolor{red}{counts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\}
@@ -361,9 +368,18 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
 \end{tabular}
 \end{frame}
-\begin{frame}[fragile]{This provides efficient ways of {\it manipulating} data}
-\vspace{0.25 cm}
-``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ rewrite all inner lists.}}
+
+\begin{frame}{}
+\LARGE
+\vspace{1 cm}
+\begin{center}
+But we can go beyond {\it representing} columnar jagged arrays and {\it manipulate} them in this form
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Example of a jagged operation: manipulating jagged arrays}
+\vspace{0.5 cm}
+\textcolor{red}{``Remove the first muon from each event.''} \uncover<2->{\textcolor{red}{\bf$\longrightarrow$ rewrite all inner lists.}}
 \scriptsize
 \begin{onlyenv}<1>
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -384,7 +400,7 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \end{onlyenv}
 \normalsize
 \vspace{0.5 cm}
-``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ increase all starts by 1.}}
+\textcolor{red}{``Remove the first muon from each event.''} \uncover<2->{\textcolor{red}{\bf$\longrightarrow$ increase all starts by 1.}}
 \vspace{0.25 cm}
 \begin{onlyenv}<1>
 \begin{tabular}{r l}
@@ -402,16 +418,20 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
 \small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
 \end{tabular}\end{onlyenv}
-\vspace{0.5 cm}
+\vspace{0.25 cm}
 
-\uncover<3>{We didn't need to touch any contents (i.e.\ read them from disk, decompress them\ldots).}
+\large
+\uncover<3>{We didn't need to touch any contents (i.e.\ read from disk/decompress them).}
+
+\vspace{0.25 cm}
+\uncover<3>{Can be very useful if only $\sim$10\% of the fields are of interest!}
 \end{frame}
 
-\begin{frame}{Properties of this representation}
+\begin{frame}{}
 \Large
-\vspace{0.5 cm}
+\vspace{1 cm}
 \begin{itemize}\setlength{\itemsep}{0.5 cm}
-\item<1-> Data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
+\item<1-> Columnar data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
 \item<2-> Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the content.
 \end{itemize}
 \end{frame}
@@ -484,7 +504,8 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 %% \end{columns}
 %% \end{frame}
 
-\begin{frame}[fragile]{Awkward Array: data structures with a Numpy-like interface}
+\begin{frame}[fragile]{Awkward Array: jagged/nested data with a Numpy-like interface}
+\vspace{0.35 cm}
 \small
 \hfill\includegraphics[height=2 cm]{awkward-logo.pdf}
 
@@ -499,7 +520,7 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 
 \begin{uncoverenv}<2->
 \begin{minted}{python}
->>> print(array)
+>>> print(array)            # an array of typed data structures
 [[1.1 2.2 None 3.3 None] [4.4 [5.5]] [<Row 0> None <Row 1>]]
 \end{minted}
 \end{uncoverenv}
@@ -514,6 +535,7 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \begin{uncoverenv}<4->
 \begin{minted}{python}
 >>> (array + 100).tolist()  # element-wise function applied to arrays
+                            # i.e. a Numpy ufunc (all ufuncs work)
 [[101.1, 102.2, None, 103.3, None],
  [104.4, [105.5]],
  [{'x': 106, 'y': {'z': 107}}, None, {'x': 108, 'y': {'z': 109}}]]
@@ -551,9 +573,10 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{High-level type may be described by what \mintinline{python}{array[x]} returns}
+\begin{frame}[fragile]{Array indexing is a function; arrays have functional type}
 \small
 \begin{minted}{python}
+>>> # array type formatted to look like a curried function's type
 >>> print(array.type)
 [0, 3) -> [0, inf) -> ?((float64             |
                          [0, inf) -> float64 |
@@ -563,14 +586,22 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 
 \normalsize
 \vspace{0.5 cm}
-{\bf That is,}
+{\bf How to read the above:}
 \begin{itemize}
-\item first square bracket in \mintinline{python}{array[x]} takes a non-negative integer less than 3;
-\item second takes a non-negative integer (unknown upper limit because it's jagged);
-\item what that returns is nullable (might be \mintinline{python}{None});
-\item and it could be a \mintinline{python}{float}, a jagged array of floats, or a record taking \mintinline{python}{'x'} or \mintinline{python}{'y'};
+\item First square bracket in \mintinline{python}{array[x]} takes a non-negative integer less than 3.
+\item Second takes a non-negative integer (unknown upper limit because it's jagged).
+\item What that returns is nullable (might be \mintinline{python}{None}).
+\item And it could be a \mintinline{python}{float}, a jagged array of floats, or a record taking \mintinline{python}{'x'} or \mintinline{python}{'y'}.
 \item \mintinline{python}{'x'} returns an integer; \mintinline{python}{'y'} returns another record taking \mintinline{python}{'z'} to integers.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\LARGE
+\vspace{1 cm}
+\begin{center}
+Let's look at a real dataset in detail
+\end{center}
 \end{frame}
 
 \begin{frame}[fragile]{NASA exoplanets dataset: stars may have more than one planet}
@@ -613,7 +644,7 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \end{onlyenv}
 \begin{onlyenv}<3>
 \small
-\vspace{-0.5 cm}
+\vspace{-0.6 cm}
 \begin{verbatim}
 >>> print(stars.type)
 [0, 2935) -> 'name'    -> <class 'str'>
@@ -663,6 +694,8 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 >>> stars["planets"][8]["mass"][1]
 0.86
 >>> stars["planets"]["mass"][8][1]
+0.86
+>>> stars["planets"]["mass"][8, 1]
 0.86
 \end{minted}
 
@@ -722,16 +755,20 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 ...      [[7.7]],
 ...      [[8.8]]]
 ...   ), flatten=True)
-
-0  0  0    1.1
-      1    2.2
-   2  0    3.3
-2  0  0    4.4
-   1  0    5.5
-      1    6.6
-3  0  0    7.7
-4  0  0    8.8
 \end{minted}
+
+\vspace{-0.6 cm}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\textcolor{red}{0}  \textcolor{darkgreen}{0}  \textcolor{blue}{0}    1.1
+      \textcolor{blue}{1}    2.2
+   \textcolor{darkgreen}{2}  \textcolor{blue}{0}    3.3
+\textcolor{red}{2}  \textcolor{darkgreen}{0}  \textcolor{blue}{0}    4.4
+   \textcolor{darkgreen}{1}  \textcolor{blue}{0}    5.5
+      \textcolor{blue}{1}    6.6
+\textcolor{red}{3}  \textcolor{darkgreen}{0}  \textcolor{blue}{0}    7.7
+\textcolor{red}{4}  \textcolor{darkgreen}{0}  \textcolor{blue}{0}    8.8
+\end{Verbatim}
 
 \column{0.5\linewidth}
 \textcolor{darkblue}{Nested records $\to$ MultiIndex columns}
@@ -746,16 +783,20 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 ...        {"x": {"y": {"z": _}}}}
 ...     for _ in range(0, 50, 10)]
 ...   ), flatten=True)
-     I        II
-     a    b    x
-          i    y
-               z
+\end{minted}
+
+\vspace{-0.6 cm}
+\begin{Verbatim}[commandchars=\\\{\}]
+     \textcolor{red}{I}        \textcolor{red}{II}
+     \textcolor{darkgreen}{a}    \textcolor{darkgreen}{b}    \textcolor{darkgreen}{x}
+          \textcolor{blue}{i}    \textcolor{blue}{y}
+               \textcolor{darkorange}{z}
 0    0    0    0
 1   10   10   10
 2   20   20   20
 3   30   30   30
 4   40   40   40
-\end{minted}
+\end{Verbatim}
 
 \end{columns}
 \end{frame}
