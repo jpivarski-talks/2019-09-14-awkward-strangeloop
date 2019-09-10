@@ -801,10 +801,34 @@ Let's look at a real dataset in detail
 \end{columns}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}[fragile]{Limitations of the Pandas scheme}
+\large
+\vspace{0.25 cm}
+Since jaggedness is represented by the DataFrame's index, a single DataFrame can't contain two differently jagged collections.
 
-But Pandas can't do multiple jagged arrays in the same DataFrame.
+\scriptsize
+\vspace{0.15 cm}
+\begin{minted}{python}
+>>> array = awkward.fromiter([{"a": [1, 2, 3], "b": [1.1, 2.2]},
+                              {"a":        [], "b":      [3.3]},
+                              {"a":    [4, 5], "b": [4.4, 5.5]}])
 
+                                                 #      index values
+>>> awkward.topandas(array["a"], flatten=True)   # -->   0  0      1
+                                                 #          1      2
+                                                 #          2      3
+                                                 #       2  0      4
+                                                 #          1      5
+
+>>> awkward.topandas(array["b"], flatten=True)   # -->   0  0    1.1
+                                                 #          1    2.2
+                                                 #       1  0    3.3
+                                                 #       2  0    4.4
+                                                 #          1    5.5
+
+>>> awkward.topandas(array, flatten=True)
+ValueError: this array has more than one jagged array structure
+\end{minted}
 \end{frame}
 
 \begin{frame}{Relationship to other packages}
