@@ -573,9 +573,9 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Another example: NASA exoplanets dataset}
+\begin{frame}[fragile]{NASA exoplanets dataset: stars may have more than one planet}
 \begin{columns}
-\column{1.07\linewidth}
+\column{1.09\linewidth}
 \small
 \begin{minted}{python}
 >>> import urllib.request
@@ -583,29 +583,37 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
 ...     json.load(
 ...         urllib.request.urlopen(
 ...            "http://scikit-hep.org/uproot/examples/exoplanets.json")))
+\end{minted}
+
+\begin{onlyenv}<1>
+\begin{minted}{python}
 >>> stars
 <Table [<Row 0> <Row 1> <Row 2> ... <Row 2933> <Row 2934>]>
 \end{minted}
 
-\begin{onlyenv}<1>
 \vspace{10 cm}
 \end{onlyenv}
 \begin{onlyenv}<2>
 \begin{minted}{python}
->>> fixit(stars[8])
-{'name': '24 Sex', 'ra': 155.86821, 'dec': -0.902244, 'dist': 72.21,
- 'mass': 1.54, 'radius': 4.9, 'planets': [
-     {'name': 'b', 'orbit': 1.333, 'eccen': 0.09, 'period': 452.8,
-      'mass': 1.99, 'radius': None},
-     {'name': 'c', 'orbit': 2.08, 'eccen': 0.29, 'period': 883.0,
-      'mass': 0.86, 'radius': None}]}
+>>> stars[8:10].tolist()
+[{'name': '24 Sex', 'ra': 155.86821, 'dec': -0.902244, 'dist': 72.21,
+  'mass': 1.54, 'radius': 4.9, 'planets': [
+      {'name': 'b', 'orbit': 1.333, 'eccen': 0.09, 'period': 452.8,
+       'mass': 1.99, 'radius': None},
+      {'name': 'c', 'orbit': 2.08, 'eccen': 0.29, 'period': 883.0,
+       'mass': 0.86, 'radius': None}]},
+ {'name': '2MASS J01225093-2439505', 'ra': 20.712243, 'dec': -24.664049,
+  'dist': 36.0, 'mass': 0.4, 'radius': None, 'planets': [
+      {'name': 'b', 'orbit': 52.0, 'eccen': None, 'period': None,
+       'mass': 24.5, 'radius': None}]}
+]
 \end{minted}
 
 \vspace{10 cm}
 \end{onlyenv}
 \begin{onlyenv}<3>
-\scriptsize
-\vspace{-0.35 cm}
+\small
+\vspace{-0.5 cm}
 \begin{verbatim}
 >>> print(stars.type)
 [0, 2935) -> 'name'    -> <class 'str'>
@@ -614,19 +622,87 @@ They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,
              'dist'    -> ?(float64)
              'mass'    -> ?(float64)
              'radius'  -> ?(float64)
-             'planets' -> [0, inf) -> 'eccen'  -> ?(float64)
-                                      'mass'   -> ?(float64)
-                                      'name'   -> <class 'str'>
+             'planets' -> [0, inf) -> 'name'   -> <class 'str'>
                                       'orbit'  -> ?(float64)
+                                      'eccen'  -> ?(float64)
                                       'period' -> ?(float64)
+                                      'mass'   -> ?(float64)
                                       'radius' -> ?(float64)
 \end{verbatim}
+
+\vspace{10 cm}
+\end{onlyenv}
+\begin{onlyenv}<4-5>
+\begin{minted}{python}
+>>> stars["mass"]
+<MaskedArray [2.7 2.78 2.2 ... 2.3 1.3 2.2]>
+
+>>> stars["planets"]["mass"]
+<JaggedArray [[19.4] [14.74] [4.8] ... [20.6] [0.6876 1.981 4.132] [2.8]]>
+\end{minted}
+
+\begin{uncoverenv}<5>
+\begin{minted}{python}
+>>> print(stars["mass"].type)             # just selecting a column
+[0, 2935) -> ?(float64)
+>>> print(stars["planets"]["mass"].type)  # projecting through a column
+[0, 2935) -> [0, inf) -> ?(float64)
+\end{minted}
+\end{uncoverenv}
+
+\vspace{10 cm}
+\end{onlyenv}
+\begin{onlyenv}<6>
+\begin{minted}{python}
+>>> stars[8]["planets"][1]["mass"]        # int and str indexes commute!
+0.86
+>>> stars[8]["planets"]["mass"][1]
+0.86
+>>> stars["planets"][8][1]["mass"]
+0.86
+>>> stars["planets"][8]["mass"][1]
+0.86
+>>> stars["planets"]["mass"][8][1]
+0.86
+\end{minted}
+
+\vspace{10 cm}
+\end{onlyenv}
+\begin{onlyenv}<7>
+\vspace{-0.4 cm}
+\begin{minted}{python}
+>>> awkward.topandas(stars, flatten=True)
+\end{minted}
+
+\tiny
+\vspace{-0.6 cm}
+\begin{verbatim}
+            name          ra        dec    dist  mass radius planets                                               
+                                                                name     orbit   eccen       period    mass radius
+0    0    11 Com  185.179276  17.792868   93.37  2.70  19.00       b  1.290000  0.2310   326.03000  19.4000    NaN
+1    0    11 UMi  229.274536  71.823898  125.72  2.78  29.79       b  1.530000  0.0800   516.21997  14.7400    NaN
+2    0    14 And  352.822571  39.236198   75.59  2.20  11.00       b  0.830000  0.0000   185.84000   4.8000    NaN
+3    0    14 Her  242.601303  43.817646   17.94  0.90   0.93       b  2.930000  0.3700  1773.40002   4.6600    NaN
+4    0  16 Cyg B  295.466553  50.517525   21.41  1.08   1.13       b  1.660000  0.6800   798.50000   1.7800    NaN
+5    0    18 Del  314.608063  10.839286   76.38  2.30   8.50       b    2.600   0.080    993.30000  10.3000    NaN
+6    0  1RXS J16  242.376268 -21.083036  145.00  0.85   0.00       b  330.000     NaN          NaN   8.0000    NaN
+7    0    24 Boo  217.157547  49.844852   96.25  0.99  10.64       b    0.190   0.042     30.35060   0.9100    NaN
+8    0    24 Sex  155.868210  -0.902244   72.21  1.54   4.90       b    1.333   0.090    452.80000   1.9900    NaN
+     1    24 Sex  155.868210  -0.902244   72.21  1.54   4.90       c    2.080   0.290    883.00000   0.8600    NaN
+...          ...         ...        ...     ...   ...    ...     ...       ...     ...         ...      ...    ...
+2932 0   tau Gem  107.784882  30.245163  112.64  2.30  26.80       b  1.170000  0.0310   305.500000 20.6000    NaN
+2933 0   ups And   24.199345  41.405460   13.41  1.30   1.56       b  0.059222  0.0215     4.617033  0.6876    NaN
+     1   ups And   24.199345  41.405460   13.41  1.30   1.56       c  0.827774  0.2596   241.258000  1.9810    NaN
+     2   ups And   24.199345  41.405460   13.41  1.30   1.56       d  2.513290  0.2987  1276.460000  4.1320    NaN
+2934 0    xi Aql  298.562012   8.461452   56.27  2.20  12.00       b  0.680000  0.0000   136.750000  2.8000    NaN
+
+[3933 rows x 12 columns]
+\end{verbatim}
+
+\vspace{10 cm}
 \end{onlyenv}
 \end{columns}
 \end{frame}
-
-
-
 
 
 
