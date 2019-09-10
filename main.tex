@@ -75,13 +75,15 @@ Do you see it?
 \end{onlyenv}\begin{onlyenv}<2>
 How about now?
 
-\begin{align*}
-K^- + p & \to \Omega^- + K^+ + K^0 \\
-\Omega^- & \to \Xi^0 + \pi^- \\
-\Xi^0 & \to \Lambda^0 + \pi^0 \\
-\Lambda^0 & \to p + \pi^- \\
-\pi^0 & \to \gamma + \gamma
-\end{align*}
+\vspace{0.5 cm}
+\includegraphics[width=\linewidth]{decay-chain.png}
+%% \begin{align*}
+%% K^- + p & \to \Omega^- + K^+ + K^0 \\
+%% \Omega^- & \to \Xi^0 + \pi^- \\
+%% \Xi^0 & \to \Lambda^0 + \pi^0 \\
+%% \Lambda^0 & \to p + \pi^- \\
+%% \pi^0 & \to \gamma + \gamma
+%% \end{align*}
 
 \vspace{1 cm}
 \end{onlyenv}\begin{onlyenv}<3>
@@ -104,7 +106,7 @@ However, these pictures come to us unlabeled: lots of interactions overlap the `
 \end{columns}
 \end{frame}
 
-\begin{frame}{Then and now}
+\begin{frame}{Then and now: mostly just scale-up}
 \vspace{0.15 cm}
 \begin{columns}
 \column{0.32\linewidth}
@@ -142,17 +144,16 @@ algorithmic searches and machine learning
 
 \begin{frame}{Algorithm to identify a particle decay}
 \large
-\vspace{0.15 cm}
+\vspace{0.5 cm}
+\begin{enumerate}
+\item Loop over all pairs of particle tracks, tentatively labeling them $\pi^+$ and $\pi^-$.
+\item Calculate m = $\sqrt{(E_{\pi^+} + E_{\pi^-})^2 - \left|\vec{p}_{\pi^+} + \vec{p}_{\pi^-}\right|^2}$ for each pair.
+\item The ones with $m \sim \mbox{mass}({K_s^0}) = 0.5\mbox{ GeV}/c^2$ are good candidates.
+\end{enumerate}
+
 \begin{center}
 \includegraphics[height=4.2 cm]{kshort-1.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-2.png}\hspace{0.1 cm}\includegraphics[height=4.2 cm]{kshort-3.png}
 \end{center}
-
-\vspace{0.15 cm}
-\begin{enumerate}
-\item Loop over all pairs of particle tracks, tentatively labeling them $\pi^+$ and $\pi^-$.
-\item Calculate m = $\sqrt{(E_{\pi^+} + E_{\pi^-})^2 - \left|\vec{p}_{\pi^+} + \vec{p}_{\pi^-}\right|^2}$.
-\item The ones with $m \sim \mbox{mass}({K_s^0}) = 0.5\mbox{ GeV}/c^2$ are good candidates.
-\end{enumerate}
 \end{frame}
 
 \begin{frame}{Apply successively down the decay chain}
@@ -169,7 +170,7 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \vspace{0.15 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
 \item All events are independent; no particles or decays cross from one event to the next.
-\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing\ldots
+\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
 \item Candidates are generated with a \mintinline{sql}{SELF JOIN} (items from the same collection) or a \mintinline{sql}{CROSS JOIN} (items from different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
 \item Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
@@ -207,16 +208,18 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{programming-languages.pdf}
 
-\vspace{0.25 cm}
-\begin{itemize}
+\begin{itemize}\setlength{\itemsep}{0.2 cm}
 \item First programmable computers were used for particle physics simulations.
-\item Fortran was used to analyze events soon after the language was invented.
+\item Fortran was used to analyze events soon after the language was invented;
+
+physicists wrote packages (BOS, HYDRA, ZBOOK) to add data structures.
+
 \item Major transition from Fortran to C++ in the late 1990's/early 2000's.
 \item Very recent adoption of Python (alongside C++).
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The Python transition}
+\begin{frame}{The Python transition is happening {\it right now}}
 \vspace{0.2 cm}
 \includegraphics[width=\linewidth]{github-cmssw-lin.pdf}
 
@@ -252,7 +255,7 @@ std::vector<Kaon*> getKaons(Event event) {
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Direct translation to Python would be a performance disaster}
+\begin{frame}[fragile]{But direct translation to Python would be a performance disaster}
 \vspace{0.25 cm}
 \begin{columns}[b]
 \column{0.7\linewidth}
@@ -281,7 +284,7 @@ def getKaons(event):
 \end{columns}
 \end{frame}
 
-\begin{frame}{High-throughput data analysis is based on Numpy}
+\begin{frame}{High-performance processing in Python usually requires Numpy}
 \vspace{0.5 cm}
 \begin{center}
 \includegraphics[width=0.35\linewidth]{numpy-logo.png}
@@ -291,23 +294,33 @@ def getKaons(event):
 \end{center}
 \end{frame}
 
-\begin{frame}{High-throughput data analysis is based on Numpy}
+\begin{frame}[fragile]{High-performance processing in Python usually requires Numpy}
 \Large
 \vspace{0.5 cm}
 \begin{columns}
-\column{0.4\linewidth}
-\includegraphics[width=\linewidth]{numpy-slicing.png}
-
 \column{0.52\linewidth}
-Numpy has a suite of operations that each apply to whole arrays (compiled, maybe vectorized loop).
+Numpy has a suite of operations that each apply to whole arrays (compiled, maybe vectorized loop):
 
-\vspace{1 cm}
+\small
+\begin{minted}{python}
+def calculate(pt, eta):
+    pz = pt * numpy.sinh(eta)
 
-By manipulating the {\tt shape} and {\tt strides}, slices are $\mathcal{O}(1)$ and zero-copy.
+calculate(pt_scalar, eta_scalar)
+calculate(pt_array,  eta_array)
+\end{minted}
+
+\Large
+\vspace{0.5 cm}
+
+\uncover<2->{By manipulating the {\tt shape} and {\tt strides}, slices are $\mathcal{O}(1)$ and zero-copy.}
+
+\column{0.4\linewidth}
+\uncover<2->{\includegraphics[width=\linewidth]{numpy-slicing.png}}
 \end{columns}
 \end{frame}
 
-\begin{frame}{But Numpy doesn't have a construct for variable-length lists}
+\begin{frame}{But Numpy doesn't have anything for variable-length lists}
 \Large
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{two-collections.pdf}
@@ -316,13 +329,82 @@ By manipulating the {\tt shape} and {\tt strides}, slices are $\mathcal{O}(1)$ a
 \uncover<2->{Arrays of variable-length subarrays are sometimes called ``jagged`` or ``ragged`` arrays.}
 \end{frame}
 
-\begin{frame}{}
-\LARGE
-\vspace{1 cm}
-HERE's the part that didn't get pushed.
+\begin{frame}[fragile]{Jagged/nested data can still be ``columnar''}
+\vspace{0.5 cm}
+\begin{columns}
+\column{0.5\linewidth}
+\small
+\begin{Verbatim}[commandchars=\\\{\}]
+[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}),
+      Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}),
+      Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
+ [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
+ [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}),
+      Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})]
+]
+\end{Verbatim}
+\column{0.35\linewidth}
+\includegraphics[width=\linewidth]{muons-as-objects.png}
+\end{columns}
+\vspace{0.5 cm}
+They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,4>{counts} or \only<2>{\textcolor{red}{offsets}}\only<1,3,4>{offsets} or \only<3>{\textcolor{red}{starts/stops}}\only<1,2,4>{starts/stops} or \only<4>{\textcolor{red}{parents}}\only<1,2,3>{parents} arrays.
+\vspace{0.25 cm}
+\begin{tabular}{r l}
+\only<1>{\small \textcolor{red}{counts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\}
+\only<2>{\small \textcolor{red}{offsets} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\}
+\only<4>{\small \textcolor{red}{parents} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2,\ \ \ \ \ \ 3,\ \ \ \ \ 3} \\}
+\only<3>{\small \textcolor{red}{starts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\}
+\uncover<3>{\small \textcolor{red}{stops}   & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\}
+\small \mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}
+\end{frame}
+\begin{frame}[fragile]{This provides efficient ways of {\it manipulating} data}
+\vspace{0.25 cm}
+``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ rewrite all inner lists.}}
+\scriptsize
+\begin{onlyenv}<1>
+\begin{Verbatim}[commandchars=\\\{\}]
+[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}), Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
+ [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
+ [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}), Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
+ ...
+\end{Verbatim}
+\end{onlyenv}\begin{onlyenv}<2->
+\begin{Verbatim}[commandchars=\\\{\}]
+[[     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     }   Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{     }  \textcolor{blue}{      } ],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     } ],
+ [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{      }   Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
+ ...
+\end{Verbatim}
+\end{onlyenv}
+\normalsize
+\vspace{0.5 cm}
+``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ increase all starts by 1.}}
+\vspace{0.25 cm}
+\begin{onlyenv}<1>
+\begin{tabular}{r l}
+\small starts  &                    {\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
+\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}
+\end{onlyenv}\begin{onlyenv}<2->
+\begin{tabular}{r l}
+\small starts  &     \textcolor{red}{\tt\scriptsize \ \ \ \ \ 1,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 6\ \ \ \ \ \ \ \ \ } \\
+\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+\end{tabular}\end{onlyenv}
+\vspace{0.5 cm}
 
-\vspace{1 cm}
-It shows jagged arrays in terms of counts, offsets, starts/stops, and parents.
+\uncover<3>{We didn't need to touch any contents (i.e.\ read them from disk, decompress them\ldots).}
 \end{frame}
 
 \begin{frame}{Properties of this representation}
@@ -331,81 +413,78 @@ It shows jagged arrays in terms of counts, offsets, starts/stops, and parents.
 \begin{itemize}\setlength{\itemsep}{0.5 cm}
 \item<1-> Data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
 \item<2-> Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the content.
-
-\vspace{0.25 cm}
-\uncover<3->{\textcolor{gray}{(For instance, the content can be lazily loaded\ldots)}}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Example: generate distinct muon pairs}
-\vspace{0.2 cm}
+%% \begin{frame}{Example: generate distinct muon pairs}
+%% \vspace{0.2 cm}
 
-\begin{columns}
-\column{1.1\linewidth}
+%% \begin{columns}
+%% \column{1.1\linewidth}
 
-{\large\bf muons:}
+%% {\large\bf muons:}
 
-\vspace{0.2 cm}
-\begin{tabular}{r l}
-\textcolor{red}{counts}  & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\
-\textcolor{red}{offsets} & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\
-\textcolor{red}{starts}  & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
-\textcolor{red}{stops}   & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
-\mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
-phi &  \textcolor{darkorange}{\tt -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
-eta &        \textcolor{blue}{\tt \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
-\end{tabular}
+%% \vspace{0.2 cm}
+%% \begin{tabular}{r l}
+%% \textcolor{red}{counts}  & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\
+%% \textcolor{red}{offsets} & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\
+%% \textcolor{red}{starts}  & \textcolor{red}{\tt \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
+%% \textcolor{red}{stops}   & \textcolor{red}{\tt \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
+%% \mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
+%% phi &  \textcolor{darkorange}{\tt -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
+%% eta &        \textcolor{blue}{\tt \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
+%% \end{tabular}
 
-\vspace{0.6 cm}
-{\large\bf muons.choose(2):}
+%% \vspace{0.6 cm}
+%% {\large\bf muons.choose(2):}
 
-\vspace{0.2 cm}
-\begin{tabular}{r l}
-\textcolor{red}{counts}  &   \textcolor{red}{\tt 3,\ \ \ \ \ \ \ 0,\ 0,\ 1} \\
-\textcolor{red}{offsets} &   \textcolor{red}{\tt 0,\ \ \ \ \ \ \ 2,\ 2,\ 2,\ 3} \\
-\textcolor{black}{left}  & \textcolor{black}{\tt 0,\ 0,\ 1,\ \ \ \ \ \ \ 5} \\
-\textcolor{black}{right} & \textcolor{black}{\tt 1,\ 2,\ 2,\ \ \ \ \ \ \ 6} \\
-\textcolor{black}{left.content}  & \textcolor{black}{muons} \\
-\textcolor{black}{right.content} & \textcolor{black}{muons} \\
-\end{tabular}
+%% \vspace{0.2 cm}
+%% \begin{tabular}{r l}
+%% \textcolor{red}{counts}  &   \textcolor{red}{\tt 3,\ \ \ \ \ \ \ 0,\ 0,\ 1} \\
+%% \textcolor{red}{offsets} &   \textcolor{red}{\tt 0,\ \ \ \ \ \ \ 2,\ 2,\ 2,\ 3} \\
+%% \textcolor{black}{left}  & \textcolor{black}{\tt 0,\ 0,\ 1,\ \ \ \ \ \ \ 5} \\
+%% \textcolor{black}{right} & \textcolor{black}{\tt 1,\ 2,\ 2,\ \ \ \ \ \ \ 6} \\
+%% \textcolor{black}{left.content}  & \textcolor{black}{muons} \\
+%% \textcolor{black}{right.content} & \textcolor{black}{muons} \\
+%% \end{tabular}
 
-\vspace{-3.2 cm}
-\uncover<2->{\hfill\includegraphics[height=3.5 cm]{muons-choose-2.pdf}}
+%% \vspace{-3.2 cm}
+%% \uncover<2->{\hfill\includegraphics[height=3.5 cm]{muons-choose-2.pdf}}
 
-\vspace{0.2 cm}
-\uncover<3->{\textcolor{gray}{(The ``left'' and ``right'' of each pair is a link to the original muons.)}}
-\end{columns}
-\end{frame}
+%% \vspace{0.2 cm}
+%% \uncover<3->{\textcolor{gray}{(The ``left'' and ``right'' of each pair is a link to the original muons.)}}
+%% \end{columns}
+%% \end{frame}
 
-\begin{frame}[fragile]{As a data structure}
-\vspace{0.25 cm}
-\begin{columns}
-\column{1.08\linewidth}
-\scriptsize
-\begin{verbatim}
-muons =
-    ListArray(
-        offsets = [0, 3, 4, 5, 7],
-        content =
-            RecordArray(
-                 pT = numpy.array([  31.1,   9.76,   8.18,   5.27,   4.72,   8.59, 8.714]),
-                eta = numpy.array([-0.481, -0.123, -0.119,  1.246, -0.207, -1.754, 0.185]),
-                phi = numpy.array([ 0.882,  0.924,  0.923, -0.991,  0.953, -0.264, 0.629])))
+%% \begin{frame}[fragile]{As a data structure}
+%% \vspace{0.25 cm}
+%% \begin{columns}
+%% \column{1.08\linewidth}
+%% \scriptsize
+%% \begin{verbatim}
+%% muons =
+%%     ListArray(
+%%         offsets = [0, 3, 4, 5, 7],
+%%         content =
+%%             RecordArray(
+%%                  pT = numpy.array([  31.1,   9.76,   8.18,   5.27,   4.72,   8.59, 8.714]),
+%%                 eta = numpy.array([-0.481, -0.123, -0.119,  1.246, -0.207, -1.754, 0.185]),
+%%                 phi = numpy.array([ 0.882,  0.924,  0.923, -0.991,  0.953, -0.264, 0.629])))
 
 
 
-muons.choose(2) =
-    ListArray(
-        offsets = [0, 2, 2, 2, 3],
-        content =
-            RecordArray(
-                 left = IndirectArray(index = [0, 0, 1, 5], content = muons)
-                right = IndirectArray(index = [1, 2, 2, 6], content = muons)))
-\end{verbatim}
-\end{columns}
-\end{frame}
+%% muons.choose(2) =
+%%     ListArray(
+%%         offsets = [0, 2, 2, 2, 3],
+%%         content =
+%%             RecordArray(
+%%                  left = IndirectArray(index = [0, 0, 1, 5], content = muons)
+%%                 right = IndirectArray(index = [1, 2, 2, 6], content = muons)))
+%% \end{verbatim}
+%% \end{columns}
+%% \end{frame}
 
-\begin{frame}[fragile]{Awkward Array: data structures with a Numpy-like API}
+\begin{frame}[fragile]{Awkward Array: data structures with a Numpy-like interface}
 \small
 \hfill\includegraphics[height=2 cm]{awkward-logo.pdf}
 
@@ -420,14 +499,14 @@ muons.choose(2) =
 
 \begin{uncoverenv}<2->
 \begin{minted}{python}
->>> print(array)            # internally, these are all arrays
+>>> print(array)
 [[1.1 2.2 None 3.3 None] [4.4 [5.5]] [<Row 0> None <Row 1>]]
 \end{minted}
 \end{uncoverenv}
 
 \begin{uncoverenv}<3->
 \begin{minted}{python}
->>> print(array[:, -2:])    # all of outer list, last two of inner
+>>> print(array[:, -2:])    # get whole outer list, last two of inner
 [[3.3 None] [4.4 [5.5]] [None <Row 1>]]
 \end{minted}
 \end{uncoverenv}
@@ -442,13 +521,13 @@ muons.choose(2) =
 \end{uncoverenv}
 \end{frame}
 
-\begin{frame}[fragile]{Structure is as deep as the {\it data type,} not the {\it data}}
+\begin{frame}[fragile]{Internally, it's a bunch or Numpy arrays {\it interpreted} as nested data}
 \begin{columns}
 \column{1.1\linewidth}
 \scriptsize
 \begin{minted}{python}
 >>> array.layout
- layout 
+ layout
 [           ()] JaggedArray(starts=layout[0], stops=layout[1], content=layout[2])
 [            0]   ndarray(shape=3, dtype=dtype('int64'))
 [            1]   ndarray(shape=3, dtype=dtype('int64'))
@@ -472,7 +551,7 @@ muons.choose(2) =
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{High-level type is defined by what \mintinline{python}{f[x]} returns}
+\begin{frame}[fragile]{High-level type may be described by what \mintinline{python}{array[x]} returns}
 \small
 \begin{minted}{python}
 >>> print(array.type)
@@ -494,7 +573,7 @@ muons.choose(2) =
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{A more realistic example}
+\begin{frame}[fragile]{Another example: NASA exoplanets dataset}
 \begin{columns}
 \column{1.07\linewidth}
 \small
@@ -546,91 +625,7 @@ muons.choose(2) =
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Jagged/nested data can still be ``columnar''}
-\vspace{0.5 cm}
 
-\begin{columns}
-\column{0.5\linewidth}
-\small
-\begin{Verbatim}[commandchars=\\\{\}]
-[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}),
-      Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}),
-      Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
- [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
- [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
- [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}),
-      Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})]
-]
-\end{Verbatim}
-\column{0.35\linewidth}
-\includegraphics[width=\linewidth]{muons-as-objects.png}
-\end{columns}
-
-\vspace{0.5 cm}
-They can be contiguous by field with \only<1>{\textcolor{red}{counts}}\only<2,3,4>{counts} or \only<2>{\textcolor{red}{offsets}}\only<1,3,4>{offsets} or \only<3>{\textcolor{red}{starts/stops}}\only<1,2,4>{starts/stops} or \only<4>{\textcolor{red}{parents}}\only<1,2,3>{parents} arrays.
-
-\vspace{0.25 cm}
-\begin{tabular}{r l}
-\only<1>{\small \textcolor{red}{counts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2\ \ \ \ \ \ \ \ \ } \\}
-\only<2>{\small \textcolor{red}{offsets} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ \ 7} \\}
-\only<4>{\small \textcolor{red}{parents} & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 0,\ \ \ \ \ \ 1,\ \ \ \ \ \ 2,\ \ \ \ \ \ 3,\ \ \ \ \ 3} \\}
-\only<3>{\small \textcolor{red}{starts}  & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\}
-\uncover<3>{\small \textcolor{red}{stops}   & \textcolor{red}{\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\}
-\small \mbox{\hspace{1 cm}$p_T$} & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
-\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
-\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
-\end{tabular}
-\end{frame}
-
-\begin{frame}[fragile]{This allows for efficient ways of {\it manipulating} data}
-\vspace{0.25 cm}
-
-``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ rewrite all inner lists.}}
-
-\scriptsize
-\begin{onlyenv}<1>
-\begin{Verbatim}[commandchars=\\\{\}]
-[[Muon(\textcolor{darkgreen}{31.1}, \textcolor{darkorange}{-0.481}, \textcolor{blue}{0.882}), Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
- [Muon(\textcolor{darkgreen}{5.27}, \textcolor{darkorange}{1.246}, \textcolor{blue}{-0.991})],
- [Muon(\textcolor{darkgreen}{4.72}, \textcolor{darkorange}{-0.207}, \textcolor{blue}{0.953})],
- [Muon(\textcolor{darkgreen}{8.59}, \textcolor{darkorange}{-1.754}, \textcolor{blue}{-0.264}), Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
- ...
-\end{Verbatim}
-\end{onlyenv}\begin{onlyenv}<2->
-\begin{Verbatim}[commandchars=\\\{\}]
-[[     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     }   Muon(\textcolor{darkgreen}{9.76}, \textcolor{darkorange}{-0.124}, \textcolor{blue}{0.924}), Muon(\textcolor{darkgreen}{8.18}, \textcolor{darkorange}{-0.119}, \textcolor{blue}{0.923})],
- [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{     }  \textcolor{blue}{      } ],
- [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{     } ],
- [     \textcolor{darkgreen}{    }  \textcolor{darkorange}{      }  \textcolor{blue}{      }   Muon(\textcolor{darkgreen}{8.714}, \textcolor{darkorange}{0.185}, \textcolor{blue}{0.629})],
- ...
-\end{Verbatim}
-\end{onlyenv}
-\normalsize
-
-\vspace{0.5 cm}
-``Remove the first muon from each event.'' \uncover<2->{\textcolor{red}{$\longrightarrow$ increase all starts by 1.}}
-
-\vspace{0.25 cm}
-\begin{onlyenv}<1>
-\begin{tabular}{r l}
-\small starts  &                    {\tt\scriptsize \ \ \ \ \ 0,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ \ \ \ \ 4,\ \ \ \ \ \ 5\ \ \ \ \ \ \ \ \ } \\
-\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
-\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
-\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
-\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
-\end{tabular}
-\end{onlyenv}\begin{onlyenv}<2->
-\begin{tabular}{r l}
-\small starts  &     \textcolor{red}{\tt\scriptsize \ \ \ \ \ 1,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 6\ \ \ \ \ \ \ \ \ } \\
-\small stops   &                    {\tt\scriptsize \ \ \ \ \ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ \ \ \ \ 5,\ \ \ \ \ \ 7\ \ \ \ \ \ \ \ \ } \\
-\small $p_T$ & \textcolor{darkgreen}{\tt\scriptsize \ \ 31.1,\ \ \ 9.76,\ \ \ 8.18,\ \ \ 5.27,\ \ \ 4.72,\ \ \ 8.59, 8.714} \\
-\small phi &  \textcolor{darkorange}{\tt\scriptsize -0.481,\ -0.123,\ -0.119,\ \ 1.246,\ -0.207,\ -1.754,\ 0.185} \\
-\small eta &        \textcolor{blue}{\tt\scriptsize \ 0.882,\ \ 0.924,\ \ 0.923,\ -0.991,\ \ 0.953,\ -0.264,\ 0.629} \\
-\end{tabular}\end{onlyenv}
-
-\vspace{0.5 cm}
-\uncover<3>{We didn't need to touch any contents (i.e.\ read them from disk, decompress them\ldots).}
-\end{frame}
 
 
 
