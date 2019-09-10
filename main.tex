@@ -168,13 +168,13 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 
 \begin{frame}{From a computational point of view\ldots}
 \Large
-\vspace{0.15 cm}
+\vspace{0.25 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(for most searches)}.
+\item All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(extremely few exceptions)}.
 \item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
 \item Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
 
-(single collection) or a \mintinline{sql}{CROSS JOIN} (different collections) \mintinline{sql}{ON t1.eventId == t2.eventId}.
+(single collection) or a \mintinline{sql}{CROSS JOIN} (different collections) but always \mintinline{sql}{ON t1.eventId == t2.eventId}.
 \item Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
 \end{frame}
@@ -325,13 +325,13 @@ calculate(pt_array,  eta_array)
 
 \begin{frame}{But Numpy doesn't have anything for unequal-length lists}
 \Large
-\vspace{0.5 cm}
+\vspace{0.05 cm}
 \includegraphics[width=\linewidth]{two-collections.pdf}
 
-\vspace{0.5 cm}
+\vspace{-0.15 cm}
 \uncover<2->{Some libraries* can represent arrays of unequal-length arrays, known as ``jagged'' or ``ragged'' arrays.}
 
-\vspace{0.25 cm}
+\vspace{0.15 cm}
 \large
 \uncover<2->{\textcolor{gray}{*Apache Arrow, XND, Zarr, TensorFlow, and ROOT (particle physics)}}
 \end{frame}
@@ -432,7 +432,7 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 \vspace{1 cm}
 \begin{itemize}\setlength{\itemsep}{0.5 cm}
 \item<1-> Columnar data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
-\item<2-> Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the content.
+\item<2-> Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the nested content.
 \end{itemize}
 \end{frame}
 
@@ -685,8 +685,8 @@ Let's look at a real dataset in detail
 \end{onlyenv}
 \begin{onlyenv}<6>
 \begin{minted}{python}
->>> stars[8]["planets"][1]["mass"]        # int and str indexes commute!
-0.86
+>>> stars[8]["planets"][1]["mass"]        # projecting through columns:
+0.86                                      # int and str indexes commute!
 >>> stars[8]["planets"]["mass"][1]
 0.86
 >>> stars["planets"][8][1]["mass"]
@@ -785,7 +785,7 @@ Let's look at a real dataset in detail
 ...   ), flatten=True)
 \end{minted}
 
-\vspace{-0.6 cm}
+\vspace{-0.4 cm}
 \begin{Verbatim}[commandchars=\\\{\}]
      \textcolor{red}{I}        \textcolor{red}{II}
      \textcolor{darkgreen}{a}    \textcolor{darkgreen}{b}    \textcolor{darkgreen}{x}
@@ -801,7 +801,7 @@ Let's look at a real dataset in detail
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Limitations of the Pandas scheme}
+\begin{frame}[fragile]{Limitation of the Pandas scheme}
 \large
 \vspace{0.25 cm}
 Since jaggedness is represented by the DataFrame's index, a single DataFrame can't contain two differently jagged collections.
@@ -879,7 +879,7 @@ for event in dataset:
 \normalsize
 
 \vspace{0.5 cm}
-{\bf Array programming:} 
+{\bf Array manipulation:} 
 \small
 \begin{minted}{python}
 dataset["A"] = dataset["X"].cross(dataset["Y"])      # cross-join
@@ -935,7 +935,7 @@ for event in dataset:
 \normalsize
 
 \vspace{0.1 cm}
-{\bf Array programming:} 
+{\bf Array manipulation:} 
 \small
 \begin{minted}{python}
 dataset["bycandidate"] = events["A"][events["A"] > cut]
@@ -989,7 +989,7 @@ for event in dataset:
 \normalsize
 
 \vspace{0.5 cm}
-{\bf Array programming:} 
+{\bf Array manipulation:} 
 \small
 \begin{minted}{python}
 argbest = quality(events["A"]).argmax()
@@ -1036,10 +1036,28 @@ Flat array of integers does what Numpy does; jagged indexes takes from each inne
 \end{columns}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}[fragile]{Maybe a domain-specific language is in order\ldots}
+\vspace{0.15 cm}
+\begin{block}{Problem (from a physicist):}
+``For events with at least three leptons (electrons or muons) and a same-flavor opposite-sign lepton pair, find the same-flavor opposite-sign lepton pair with the mass closest to 91.2 GeV and make a histogram of the pT of the leading other lepton.''
+\end{block}
 
+\small
+\vspace{0.25 cm}
+\begin{Verbatim}[commandchars=\\\{\}]
+leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 
+\textcolor{darkgreen}{\textbf{cut}} \textcolor{blue}{count}(leptons) >= \textcolor{darkorange}{3} \textcolor{darkgreen}{\textbf{named}} \textcolor{darkorange}{"three_leptons"} \{
+    Z = electrons \textcolor{darkgreen}{\textbf{as}} (lep1, lep2) \textcolor{darkgreen}{\textbf{union}} muons \textcolor{darkgreen}{\textbf{as}} (lep1, lep2)
+            \textcolor{darkgreen}{\textbf{where}} lep1\textcolor{blue}{.charge} != lep2\textcolor{blue}{.charge}
+            \textcolor{darkgreen}{\textbf{min by}} \textcolor{blue}{abs}(\textcolor{blue}{mass}(lep1, lep2) - \textcolor{darkorange}{91.2})
 
+    third = leptons \textcolor{darkgreen}{\textbf{except}} [Z\textcolor{blue}{.lep1}, Z\textcolor{blue}{.lep2}] \textcolor{darkgreen}{\textbf{max by}} pt
+
+    \textcolor{darkgreen}{\textbf{hist}} third.pt \textcolor{darkgreen}{\textbf{by}} \textcolor{blue}{regular}(\textcolor{darkorange}{100}, \textcolor{darkorange}{0}, \textcolor{darkorange}{250}) \textcolor{darkgreen}{\textbf{named}} \textcolor{darkorange}{"third_pt"}
+                          \textcolor{darkgreen}{\textbf{titled}} \textcolor{darkorange}{"Leading other lepton pT"}
+\}
+\end{Verbatim}
 \end{frame}
 
 
