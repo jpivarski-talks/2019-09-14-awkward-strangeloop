@@ -1082,18 +1082,23 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 
 \begin{frame}{Next steps}
 \large
+\vspace{0.5 cm}
 \begin{columns}
 \column{0.5\linewidth}
-\begin{itemize}
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
 \item At this point, we see some flaws:
-\begin{itemize}
-\item \mintinline{python}{A.cross(B)} versus \mintinline{python}{awkward.cross(A, B)};
-\item should hide \mintinline{python}{JaggedArray}/\mintinline{python}{MaskedArray}/etc.\ structure in a single \mintinline{python}{Array}
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item \mintinline{python}{A.cross(B)} versus \mintinline{python}{awkward.cross(A, B)}
+\item should hide \mintinline{python}{JaggedArray}/
+
+\mintinline{python}{Table}/\mintinline{python}{MaskedArray}/etc.\ structure in a single \mintinline{python}{Array} class.
 \end{itemize}
 
-\item For a long time, we've wanted a versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
+\item We want versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
 
-\item So we're rewriting it in four layers (see right).
+\item So we're rewriting it in four layers:
+
+\vspace{0.5 cm}
 \end{itemize}
 
 \column{0.5\linewidth}
@@ -1101,9 +1106,38 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 \end{columns}
 \end{frame}
 
+\begin{frame}{Is this only for particle physics?}
+\large
+\vspace{0.5 cm}
+The existence of Arrow and XND suggest that it's not: ``nested data structures'' can hardly be domain-specific.
 
+\vspace{-0.15 cm}
+\begin{uncoverenv}<2->
+\begin{center}
+\includegraphics[width=0.6\linewidth]{explode-flat-reduce.pdf}
+\end{center}
 
-\begin{frame}{}
+\vspace{-0.35 cm}
+The join-map-filter-reduce cycle would be useful in genetics: at each site of a genetic sequence, a combinatorial number of allele candidates must be considered (join), uncertainties computed (map), and minimized (reduce).
+\end{uncoverenv}
+
+\vspace{0.5 cm}
+\uncover<3->{\mintinline{python}{awkward.fromiter} could be used with \mintinline{python}{simdjson} to convert huge JSON datasets into Awkward Arrays. \textcolor{darkblue}{Do you have big JSON datasets to analyze?}}
+\end{frame}
+
+\begin{frame}{Thanks}
+Many people have been helpful in this work:
+\begin{itemize}
+\item Jaydeep Nandi (GSoC): clever algorithms for \mintinline{python}{cross}, \mintinline{python}{pairs}, and jagged reduce
+\item Charles Escott (GSoC): investigation into pybind11 and C++
+\item Nick Smith (Fermilab): clever algorithms for \mintinline{python}{choose}, \mintinline{python}{argmax}, \mintinline{python}{argsort}
+\item Jonas Rembser (LLR-\'Ecole Polytechnique): clever algorithm for \mintinline{python}{concatenate}
+\item Mason Proffitt (U.\ Washington): many bug reports and fixes
+\item The Coffea Team (Fermilab): extensive feedback from use in CMS physics
+\item Alistair Miles and Gavin Band (Wellcome Centre, Oxford): conversations about Zarr and genetics
+\item The XND Team: conversations about scope and direction of XND
+\item Wes McKinney (Ursa Labs) and Julien Le Dem (WeWork): conversations about Apache Arrow
+\end{itemize}
 \end{frame}
 
 \end{document}
