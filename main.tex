@@ -596,6 +596,57 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Arrays are functions; integer indexing is composition}
+\vspace{0.35 cm}
+\begin{columns}
+\column{1.07\linewidth}
+\small
+Consider any two $\mathbb{Z}^{\ge 0} \to \mathbb{Z}^{\ge 0}$ functions,
+
+\scriptsize
+\vspace{-0.05 cm}
+\begin{minted}{python}
+def f(x):
+    return x**2 - 5*x + 10
+def g(y):
+    return max(0, 2*y - 10) + 3
+\end{minted}
+
+\small
+\vspace{-0.05 cm}
+sample them as arrays, including the composition $f \circ g$,
+
+\scriptsize
+\vspace{-0.05 cm}
+\begin{minted}{python}
+F   = numpy.array([f(i) for i in range(10)])     # F is f at 10 elements
+G   = numpy.array([g(i) for i in range(100)])    # G is g at 100 elements (to cover max(F))
+GoF = numpy.array([g(f(i)) for i in range(10)])  # GoF is g∘f at 10 elements
+\end{minted}
+
+\small
+\vspace{-0.05 cm}
+and indexing \mintinline{python}{G} by \mintinline{python}{F} is the same as the sampled composition \mintinline{python}{GoF}:
+
+\scriptsize
+\vspace{-0.05 cm}
+\begin{minted}{python}
+print("G\u2218F =", G[F])   # integer indexing
+print("g\u2218f =", GoF)    # array of the composed functions
+\end{minted}
+
+\vspace{-0.6 cm}
+\begin{verbatim}
+G∘F = [13  5  3  3  5 13 25 41 61 85]
+g∘f = [13  5  3  3  5 13 25 41 61 85]
+\end{verbatim}
+
+\small
+\vspace{-0.05 cm}
+The associativity of function composition ($f(g(x)) == (f \circ g)(x)$) lets us delay operations on nested arrays. \textcolor{gray}{(I'd love to find any literature references on this, if anyone knows where to look\ldots)}
+\end{columns}
+\end{frame}
+
 \begin{frame}{}
 \LARGE
 \vspace{1 cm}
@@ -845,7 +896,7 @@ ValueError: this array has more than one jagged array structure
 
 \item \textcolor{darkblue}{Zarr:} array I/O and delivery, including a {\tt VLenArray} (ragged array) because it's useful for genetics.
 
-\item \textcolor{darkblue}{ROOT:} particle physics data analysis; I/O is columnar for better compression, but in-memory data are C++ objects.
+\item \textcolor{darkblue}{ROOT:} particle physics data analysis; I/O is columnar for better compression, but in-memory data are C++ class instances.
 \end{itemize}
 
 \vspace{0.4 cm}
@@ -908,7 +959,7 @@ def cross(self, other):
 
 def choose(self, n):
     # vectorized as well
-    # (in fact, it's limited to n <= 5 due to the Abel-Ruffini theorem!)
+    # (in fact, it's n <= 5 because there's no solution to the quintic!)
     ...
 \end{minted}
 \end{columns}
@@ -1096,7 +1147,7 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 
 \item We want versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
 
-\item So we're rewriting it in four layers:
+\item So we're rewriting it in layers \hfill$\longrightarrow$
 
 \vspace{0.5 cm}
 \end{itemize}
@@ -1125,7 +1176,7 @@ The join-map-filter-reduce cycle would be useful in genetics: at each site of a 
 \uncover<3->{\mintinline{python}{awkward.fromiter} could be used with \mintinline{python}{simdjson} to convert huge JSON datasets into Awkward Arrays. \textcolor{darkblue}{Do you have big JSON datasets to analyze?}}
 \end{frame}
 
-\begin{frame}{Thanks}
+\begin{frame}{Thanks!}
 \vspace{0.35 cm}
 Many people have been helpful in this work:
 \begin{itemize}
