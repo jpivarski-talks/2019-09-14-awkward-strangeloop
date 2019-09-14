@@ -32,8 +32,8 @@
 \definecolor{darkgreen}{rgb}{0,0.6,0}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\title[2019-09-14-awkward-strangeloop]{Jagged, ragged, awkward arrays}
-\author{Jim Pivarski}
+\title[2019-09-14-awkward-strangeloop]{\huge Jagged, ragged, awkward arrays!}
+\author{\Large Jim Pivarski}
 \institute{Princeton University -- IRIS-HEP}
 \date{September 14, 2019}
 
@@ -70,23 +70,24 @@
 \begin{columns}
 \column{0.48\linewidth}
 \only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2->{\includegraphics[width=\linewidth]{omega-minus-2.png}}
-\column{0.52\linewidth}
+\column{0.55\linewidth}
 
 \begin{center}
 \begin{onlyenv}<1>
-This is a famous photo: the 1964 discovery of the $\Omega$ baryon.
+\vspace{-0.5 cm}
+This is a photo of subatomic particles leaving tracks in a detector.
 
-\vspace{1 cm}
+\vspace{0.5 cm}
+In 1964, a group at Berkeley scanned 100,000 photos to find this one: the discovery of the $\Omega$ baryon.
+
+\vspace{0.5 cm}
 Do you see it?
-
-\vspace{1 cm}
 \end{onlyenv}\begin{onlyenv}<2>
+\vspace{-0.5 cm}
 How about now?
 
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{decay-chain.png}
-
-\vspace{0.5 cm}
 %% \begin{align*}
 %% K^- + p & \to \Omega^- + K^+ + K^0 \\
 %% \Omega^- & \to \Xi^0 + \pi^- \\
@@ -126,16 +127,25 @@ However, these pictures come to us unlabeled: lots of interactions overlap the `
 \begin{columns}
 \column{0.35\linewidth}
 \centering
+\vspace{-1 cm}
+
 photographs
 
+\vspace{\baselineskip}
 \vspace{0.5 cm}
 100,000 events
 
 \vspace{0.5 cm}
 manual/semi-automated scans
 
+\vspace{\baselineskip}
+\vspace{0.5 cm}
+30 authors
+
 \column{0.35\linewidth}
 \centering
+\vspace{-1 cm}
+
 digitized signals \\
 
 \vspace{0.5 cm}
@@ -143,6 +153,9 @@ $\sim$trillion events \\
 
 \vspace{0.5 cm}
 algorithmic searches and machine learning
+
+\vspace{0.5 cm}
+3,000 authors
 \end{columns}
 \end{center}
 
@@ -178,12 +191,12 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \Large
 \vspace{0.25 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(extremely few exceptions)}.
-\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
-\item Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
+\item<1-> All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(extremely few exceptions)}.
+\item<2-> Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
+\item<3-> Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
 
 (single collection) or a \mintinline{sql}{CROSS JOIN} (different collections) but always \mintinline{sql}{ON t1.eventId == t2.eventId}.
-\item Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
+\item<4-> Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
 \end{frame}
 
@@ -200,7 +213,7 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \vspace{0.25 cm}
 \begin{itemize}
 \item Large number of events, processed in parallel.
-\item Each event has an {\it arbitrary number} of record structures.
+\item Each event has an {\it arbitrary number} of record-like structures.
 \item Not reducible to a flat table without padding and/or loss.
 \end{itemize}
 
@@ -220,13 +233,13 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \includegraphics[width=\linewidth]{programming-languages.pdf}
 
 \begin{itemize}\setlength{\itemsep}{0.2 cm}
-\item First programmable computers were used for particle physics simulations.
-\item Fortran was used to analyze events soon after the language was invented;
+\item[\textcolor{gray}{--}] \textcolor{gray}{First programmable computers were used for particle physics simulations.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{Fortran was used to analyze events soon after the language was invented;}
 
-physicists wrote packages (BOS, HYDRA, ZBOOK) to add data structures.
+\textcolor{gray}{physicists wrote packages (BOS, HYDRA, ZBOOK) to add data structures.}
 
-\item Major transition from Fortran to C++ in the late 1990's/early 2000's.
-\item Very recent adoption of Python (alongside C++).
+\item[\textcolor{gray}{--}] \textcolor{gray}{Major transition from Fortran to C++ in the late 1990's/early 2000's.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{Very recent adoption of Python (alongside C++).}
 \end{itemize}
 \end{frame}
 
@@ -295,7 +308,7 @@ def getKaons(event):
 \end{columns}
 \end{frame}
 
-\begin{frame}{High-performance processing in Python usually requires Numpy}
+\begin{frame}{High-performance processing in Python? Numpy!}
 \vspace{0.5 cm}
 \begin{center}
 \includegraphics[width=0.35\linewidth]{numpy-logo.png}
@@ -305,7 +318,7 @@ def getKaons(event):
 \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{High-performance processing in Python usually requires Numpy}
+\begin{frame}[fragile]{High-performance processing in Python? Numpy!}
 \Large
 \vspace{0.5 cm}
 \begin{columns}
