@@ -32,8 +32,8 @@
 \definecolor{darkgreen}{rgb}{0,0.6,0}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\title[2019-09-14-awkward-strangeloop]{Jagged, ragged, awkward arrays}
-\author{Jim Pivarski}
+\title[2019-09-14-awkward-strangeloop]{\huge Jagged, ragged, awkward arrays!}
+\author{\Large Jim Pivarski}
 \institute{Princeton University -- IRIS-HEP}
 \date{September 14, 2019}
 
@@ -56,29 +56,38 @@
 
 % START START START START START START START START START START START START START
 
+\begin{frame}{}
+\vspace{-0.05 cm}
+\begin{columns}
+\column{1.2\linewidth}
+\includegraphics[width=\linewidth]{iris-hep-website.png}
+\end{columns}
+\end{frame}
+
 \begin{frame}{Motivation: particle physics analysis}
 \Large
 \vspace{0.35 cm}
 \begin{columns}
 \column{0.48\linewidth}
 \only<1>{\includegraphics[width=\linewidth]{omega-minus-1.png}}\only<2->{\includegraphics[width=\linewidth]{omega-minus-2.png}}
-\column{0.52\linewidth}
+\column{0.55\linewidth}
 
 \begin{center}
 \begin{onlyenv}<1>
-This is a famous photo: the 1964 discovery of the $\Omega$ baryon.
+\vspace{-0.5 cm}
+This is a photo of subatomic particles leaving tracks in a detector.
 
-\vspace{1 cm}
+\vspace{0.5 cm}
+In 1964, a group at Berkeley scanned 100,000 photos to find this one: the discovery of the $\Omega$ baryon.
+
+\vspace{0.5 cm}
 Do you see it?
-
-\vspace{1 cm}
 \end{onlyenv}\begin{onlyenv}<2>
+\vspace{-0.5 cm}
 How about now?
 
 \vspace{0.5 cm}
 \includegraphics[width=\linewidth]{decay-chain.png}
-
-\vspace{0.5 cm}
 %% \begin{align*}
 %% K^- + p & \to \Omega^- + K^+ + K^0 \\
 %% \Omega^- & \to \Xi^0 + \pi^- \\
@@ -118,16 +127,25 @@ However, these pictures come to us unlabeled: lots of interactions overlap the `
 \begin{columns}
 \column{0.35\linewidth}
 \centering
+\vspace{-1 cm}
+
 photographs
 
+\vspace{\baselineskip}
 \vspace{0.5 cm}
 100,000 events
 
 \vspace{0.5 cm}
 manual/semi-automated scans
 
+\vspace{\baselineskip}
+\vspace{0.5 cm}
+30 authors
+
 \column{0.35\linewidth}
 \centering
+\vspace{-1 cm}
+
 digitized signals \\
 
 \vspace{0.5 cm}
@@ -135,6 +153,9 @@ $\sim$trillion events \\
 
 \vspace{0.5 cm}
 algorithmic searches and machine learning
+
+\vspace{0.5 cm}
+3,000 authors
 \end{columns}
 \end{center}
 
@@ -170,12 +191,12 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \Large
 \vspace{0.25 cm}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(extremely few exceptions)}.
-\item Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
-\item Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
+\item<1-> All events are independent; no particles or decays cross from one event to the next \textcolor{gray}{(extremely few exceptions)}.
+\item<2-> Detectors produce collections of different kinds of signals: tracks, energy deposition, timing, etc., each in its own variable-length collection.
+\item<3-> Decay candidates may be thought of as a \mintinline{sql}{SELF JOIN}
 
 (single collection) or a \mintinline{sql}{CROSS JOIN} (different collections) but always \mintinline{sql}{ON t1.eventId == t2.eventId}.
-\item Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
+\item<4-> Good candidates are identified by {\it filtering} (throw away the bad) and/or {\it reduction} (pick the best of what remains.)
 \end{itemize}
 \end{frame}
 
@@ -192,7 +213,7 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \vspace{0.25 cm}
 \begin{itemize}
 \item Large number of events, processed in parallel.
-\item Each event has an {\it arbitrary number} of record structures.
+\item Each event has an {\it arbitrary number} of record-like structures.
 \item Not reducible to a flat table without padding and/or loss.
 \end{itemize}
 
@@ -212,13 +233,13 @@ $H \to ZZ$\hspace{1 cm}$Z \to e^+e^-$\hspace{1 cm}$Z \to \mu^+\mu^-$
 \includegraphics[width=\linewidth]{programming-languages.pdf}
 
 \begin{itemize}\setlength{\itemsep}{0.2 cm}
-\item First programmable computers were used for particle physics simulations.
-\item Fortran was used to analyze events soon after the language was invented;
+\item[\textcolor{gray}{--}] \textcolor{gray}{First programmable computers were used for particle physics simulations.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{Fortran was used to analyze events soon after the language was invented;}
 
-physicists wrote packages (BOS, HYDRA, ZBOOK) to add data structures.
+\textcolor{gray}{physicists wrote packages (BOS, HYDRA, ZBOOK) to add data structures.}
 
-\item Major transition from Fortran to C++ in the late 1990's/early 2000's.
-\item Very recent adoption of Python (alongside C++).
+\item[\textcolor{gray}{--}] \textcolor{gray}{Major transition from Fortran to C++ in the late 1990's/early 2000's.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{Very recent adoption of Python (alongside C++).}
 \end{itemize}
 \end{frame}
 
@@ -287,7 +308,7 @@ def getKaons(event):
 \end{columns}
 \end{frame}
 
-\begin{frame}{High-performance processing in Python usually requires Numpy}
+\begin{frame}{High-performance processing in Python? Numpy!}
 \vspace{0.5 cm}
 \begin{center}
 \includegraphics[width=0.35\linewidth]{numpy-logo.png}
@@ -297,7 +318,7 @@ def getKaons(event):
 \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{High-performance processing in Python usually requires Numpy}
+\begin{frame}[fragile]{High-performance processing in Python? Numpy!}
 \Large
 \vspace{0.5 cm}
 \begin{columns}
@@ -329,11 +350,11 @@ calculate(pt_array,  eta_array)
 \includegraphics[width=\linewidth]{two-collections.pdf}
 
 \vspace{-0.15 cm}
-\uncover<2->{Some libraries* can represent arrays of unequal-length arrays, known as ``jagged'' or ``ragged'' arrays.}
+\uncover<2->{Some libraries\textcolor{gray}{*} can represent arrays of unequal-length arrays, known as ``jagged'' or ``ragged'' arrays.}
 
 \vspace{0.15 cm}
 \large
-\uncover<2->{\textcolor{gray}{*Apache Arrow, XND, Zarr, TensorFlow, and ROOT (particle physics)}}
+\uncover<2->{\textcolor{gray}{*Apache Arrow, XND, TensorFlow, Zarr (genetics), and ROOT (particle physics)}}
 \end{frame}
 
 \begin{frame}[fragile]{Jagged/nested data can be contiguous by field (``columnar'')}
@@ -427,12 +448,15 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 \uncover<3>{Can be very useful if only $\sim$10\% of the fields are of interest!}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{Properties of columnar data}
 \Large
-\vspace{1 cm}
+\vspace{0.5 cm}
 \begin{itemize}\setlength{\itemsep}{0.5 cm}
 \item<1-> Columnar data structures are {\it fully composable:} a jagged array's content can be another jagged array, some fields of a record structure can be jagged, others not.
-\item<2-> Most operations (such as slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the nested content.
+
+\item<2-> Other non-trivial data types may be encoded this way: heterogeneous lists, nullable types, pointers\ldots
+
+\item<3-> Most operations (beyond just slicing) can modify the structure ({\tt counts}/{\tt offsets}/{\tt starts,stops}/{\tt parents}) without touching the nested content.
 \end{itemize}
 \end{frame}
 
@@ -504,7 +528,7 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 %% \end{columns}
 %% \end{frame}
 
-\begin{frame}[fragile]{Awkward Array: jagged/nested data with a Numpy-like interface}
+\begin{frame}[fragile]{Awkward Array: columnar data with a Numpy-like interface}
 \vspace{0.35 cm}
 \small
 \hfill\includegraphics[height=2 cm]{awkward-logo.pdf}
@@ -520,7 +544,7 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 
 \begin{uncoverenv}<2->
 \begin{minted}{python}
->>> print(array)            # an array of typed data structures
+>>> print(array)            # an array of columnar data
 [[1.1 2.2 None 3.3 None] [4.4 [5.5]] [<Row 0> None <Row 1>]]
 \end{minted}
 \end{uncoverenv}
@@ -586,17 +610,17 @@ But we can go beyond {\it representing} columnar jagged arrays and {\it manipula
 
 \normalsize
 \vspace{0.5 cm}
-{\bf How to read the above:}
+\textcolor{gray}{\bf How to read the above:}
 \begin{itemize}
-\item First square bracket in \mintinline{python}{array[x]} takes a non-negative integer less than 3.
-\item Second takes a non-negative integer (unknown upper limit because it's jagged).
-\item What that returns is nullable (might be \mintinline{python}{None}).
-\item And it could be a \mintinline{python}{float}, a jagged array of floats, or a record taking \mintinline{python}{'x'} or \mintinline{python}{'y'}.
-\item \mintinline{python}{'x'} returns an integer; \mintinline{python}{'y'} returns another record taking \mintinline{python}{'z'} to integers.
+\item[\textcolor{gray}{--}] \textcolor{gray}{First square bracket in \mintinline{python}{array[x]} takes a non-negative integer less than 3.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{Second takes a non-negative integer (unknown upper limit because it's jagged).}
+\item[\textcolor{gray}{--}] \textcolor{gray}{What that returns is nullable (might be \mintinline{python}{None}).}
+\item[\textcolor{gray}{--}] \textcolor{gray}{And it could be a \mintinline{python}{float}, a jagged array of floats, or a record taking \mintinline{python}{'x'} or \mintinline{python}{'y'}.}
+\item[\textcolor{gray}{--}] \textcolor{gray}{\mintinline{python}{'x'} returns an integer; \mintinline{python}{'y'} returns another record taking \mintinline{python}{'z'} to integers.}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Arrays are functions; integer indexing is composition}
+\begin{frame}[fragile]{Aside: arrays are functions; integer indexing is composition}
 \vspace{0.35 cm}
 \begin{columns}
 \column{1.07\linewidth}
@@ -631,8 +655,8 @@ and indexing \mintinline{python}{G} by \mintinline{python}{F} is the same as the
 \scriptsize
 \vspace{-0.05 cm}
 \begin{minted}{python}
-print("G\u2218F =", G[F])   # integer indexing
-print("g\u2218f =", GoF)    # array of the composed functions
+print("G\u2218F =", G[F])   # integer indexing (numpy.take)
+print("g\u2218f =", GoF)    # array of the composed functions returns the same thing
 \end{minted}
 
 \vspace{-0.6 cm}
@@ -651,7 +675,7 @@ The associativity of function composition ($f(g(x)) == (f \circ g)(x)$) lets us 
 \LARGE
 \vspace{1 cm}
 \begin{center}
-Let's look at a real dataset in detail
+Getting back to the main point: let's look at real data
 \end{center}
 \end{frame}
 
@@ -730,6 +754,10 @@ Let's look at a real dataset in detail
 >>> print(stars["planets"]["mass"].type)  # projecting through a column
 [0, 2935) -> [0, inf) -> ?(float64)
 \end{minted}
+
+\begin{center}
+This ``projection'' selects a column that slices through rows, but in a ``jagged'' way.
+\end{center}
 \end{uncoverenv}
 
 \vspace{10 cm}
@@ -755,7 +783,7 @@ Let's look at a real dataset in detail
 \begin{onlyenv}<7>
 \vspace{-0.4 cm}
 \begin{minted}{python}
->>> awkward.topandas(stars, flatten=True)
+>>> awkward.topandas(stars, flatten=True)  # put jaggedness in the index
 \end{minted}
 
 \tiny
@@ -852,7 +880,7 @@ Let's look at a real dataset in detail
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Limitation of the Pandas scheme}
+\begin{frame}[fragile]{Limitation of Pandas's MultiIndex}
 \large
 \vspace{0.25 cm}
 Since jaggedness is represented by the DataFrame's index, a single DataFrame can't contain two differently jagged collections.
@@ -938,7 +966,7 @@ dataset["B"] = dataset["X"].choose(2)                # self-join
 \end{minted}
 \end{frame}
 
-\begin{frame}[fragile]{The {\tt cross} and {\tt choose} methods are implemented with Numpy}
+\begin{frame}[fragile]{How are {\tt cross} and {\tt choose} implemented? Numpy tricks!}
 \begin{columns}
 \column{1.05\linewidth}
 \small
@@ -994,7 +1022,7 @@ dataset["byevent"]     = events["A"][events["A"].max() > cut]
 \end{minted}
 \end{frame}
 
-\begin{frame}[fragile]{Generalized masking (i.e.\ \mintinline{python}{numpy.compress})}
+\begin{frame}[fragile]{Masking by an array (i.e.\ \mintinline{python}{numpy.compress}) $\to$ jagged masking}
 \small
 \begin{columns}
 \column{1.1\linewidth}
@@ -1043,7 +1071,7 @@ for event in dataset:
 {\bf Array manipulation:} 
 \small
 \begin{minted}{python}
-argbest = quality(events["A"]).argmax()
+argbest = quality(events["A"]).argmax()   # jagged array of integers
 
 dataset["best"] = events["A"][argbest]
 \end{minted}
@@ -1058,7 +1086,7 @@ only_the_best = dataset["best"].flatten()
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Generalized indexing (i.e.\ \mintinline{python}{numpy.take})}
+\begin{frame}[fragile]{Indexing by an array (i.e.\ \mintinline{python}{numpy.take}) $\to$ jagged indexing}
 \small
 \begin{columns}
 \column{1.1\linewidth}
@@ -1090,12 +1118,12 @@ Flat array of integers does what Numpy does; jagged indexes takes from each inne
 
 \begin{frame}[fragile]{Maybe a domain-specific language is in order\ldots}
 \vspace{0.15 cm}
-\begin{block}{Problem (from a physicist):}
+\begin{block}{Problem statement (from a physicist):}
 ``For events with at least three leptons (electrons or muons) and a same-flavor opposite-sign lepton pair, find the same-flavor opposite-sign lepton pair with the mass closest to 91.2 GeV and make a histogram of the pT of the leading other lepton.''
 \end{block}
 
 \small
-\vspace{0.25 cm}
+\vspace{0.1 cm}
 \begin{Verbatim}[commandchars=\\\{\}]
 leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 
@@ -1112,7 +1140,7 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 \end{Verbatim}
 \end{frame}
 
-\begin{frame}{Project status}
+\begin{frame}{Awkward Array project status}
 \large
 \begin{columns}
 \column{1.05\linewidth}
@@ -1121,12 +1149,11 @@ leptons = electrons \textcolor{darkgreen}{\textbf{union}} muons
 \end{center}
 
 \vspace{-0.35 cm}
-\begin{itemize}
-\item Made a dependency of uproot (reads particle physics data files) last September.
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item Made a dependency of uproot (I/O library for particle physics) last September.
 
-\textcolor{gray}{\normalsize ROOT file $\to$ Numpy or Awkward arrays, depending on structure (majority Awkward).}
+\textcolor{gray}{\normalsize ROOT file $\to$ Numpy or Awkward arrays, depending on structure (most are jagged).}
 
-\item Hundreds of pip-installations per day; about 1.5 GitHub issues per week.
 \item Several user-contributed methods, a dozen more inspired by user needs.
 \end{itemize}
 \end{columns}
@@ -1165,29 +1192,29 @@ lazy arrays are \mintinline{python}{ChunkedArrays} containing \mintinline{python
 \end{columns}
 \end{frame}
 
-\begin{frame}{Next steps}
+\begin{frame}{Rewrite/redesign in C and C++}
 \large
 \vspace{0.5 cm}
 \begin{columns}
-\column{0.5\linewidth}
+\column{0.58\linewidth}
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
-\item At this point, we see some flaws:
+\item<1-> We want versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
+
+\item<2-> We also want to fix interface design flaws:
 \begin{itemize}\setlength{\itemsep}{0.25 cm}
 \item \mintinline{python}{A.cross(B)} versus \mintinline{python}{awkward.cross(A, B)}
-\item should hide \mintinline{python}{JaggedArray}/
+\item should hide \mintinline{python}{JaggedArray}/\mintinline{python}{Table}/
 
-\mintinline{python}{Table}/\mintinline{python}{MaskedArray}/etc.\ structure in a single \mintinline{python}{Array} class.
+\mintinline{python}{MaskedArray}/etc.\ structure in a single \mintinline{python}{Array} class.
 \end{itemize}
 
-\item We want versions in C++ (for interfaces) and Numba (to allow procedural programming), but keeping three versions in sync is beyond our resources.
-
-\item So we're rewriting it in layers \hfill$\longrightarrow$
+\item<3-> So we're rewriting it in layers \hfill$\longrightarrow$ $\longrightarrow$ $\longrightarrow$
 
 \vspace{0.5 cm}
 \end{itemize}
 
 \column{0.5\linewidth}
-\includegraphics[width=\linewidth]{awkward-1-0-layers.pdf}
+\uncover<3>{\includegraphics[width=\linewidth]{awkward-1-0-layers.pdf}}
 \end{columns}
 \end{frame}
 
@@ -1203,7 +1230,7 @@ The existence of Arrow and XND suggest that it's not: ``nested data structures''
 \end{center}
 
 \vspace{-0.35 cm}
-The join-map-filter-reduce cycle would be useful in genetics: at each site of a genetic sequence, a combinatorial number of allele candidates must be considered (join), uncertainties computed (map), and minimized (reduce).
+The join-map-filter-reduce cycle is important in genetics, too: at each site of a genetic sequence, a combinatorial number of allele candidates must be considered (join), uncertainties computed (map), and minimized (reduce).
 \end{uncoverenv}
 
 \vspace{0.5 cm}
